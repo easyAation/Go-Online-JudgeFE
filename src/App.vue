@@ -1,23 +1,48 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <router-view/>
+    <oj-layout></oj-layout>
   </div>
 </template>
 
 <script>
+import Layout from './components/Layout'
+import { mapMutations, mapGetters, mapState } from 'vuex'
 export default {
-  name: 'App'
+  name: 'App',
+  components: {
+    'oj-layout': Layout
+  },
+  watch: {
+    '$route' () {
+      this.changeDomTitle()
+    }
+  }
 }
 </script>
 
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+<style lang="stylus">
+a
+  text-decoration: none
+ul, li
+  list-style-type: none
+.ac
+  color: red
+.wa, .re, .tle, .mle, .ole, .se, .rp
+  color: #11b811
+.ce
+  color: #6633FF
+.pe
+  color: orange
+.pd, .rj
+  color: black
 </style>
+
+<style>
+    .btn-menu {
+      font-size: 16px;
+      float: right;
+      margin-right: 10px;
+    }
+</style>
+
+
