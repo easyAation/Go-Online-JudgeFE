@@ -2,7 +2,7 @@
     <div class="nav-wrap">
         <Layout>
             <Header :style="{position: 'fixed', width: '100%', 'z-index': 100}">
-            <Menu mode="horizontal" :theme="theme1" active-name="active" class="oj-menu">
+            <Menu mode="horizontal" active-name="active">
                 <div class="left">
                 <router-link to="/">
                 <MenuItem name="home">

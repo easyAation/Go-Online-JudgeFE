@@ -1,126 +1,48 @@
 <template lang="html">
   <div class="home-wrap">
     <div class="news">NewsList</div>
-    <Card>
+    <Card v-for="(item,i) in list" :key="item.id">
       <Row type="flex" align="middle">
         <Col :span="2">
-          <Icon size="40" type="ios-chatboxes"></Icon>
+          <Icon size="40" color="#2d8cf0" type="ios-chatboxes"></Icon>
         </Col>
         <Col :span="20">
-            <span>2018年ACM实验室招新个人赛</span>
-            <p>2018-10-09 20:37:29</p>
+            <router-link :to="{ name: 'newsInfo', params: { nid: item.id } }">
+              <span style="color:#2d8cf0;">{{ item.title }}</span>
+            </router-link>
+            <p>{{ item.created_at | timePretty }}</p>
         </Col>
         <Col :span="2">
           <Icon  type="close-circled"></Icon>
         </Col>
       </Row>
     </Card>
-
-    <Card>
-      <Row type="flex" align="middle">
-        <Col :span="2">
-          <Icon type="chatbox-working"></Icon>
-        </Col>
-        <Col :span="20">
-          <!-- <router-link :to="{ name: 'newsInfo', params: { nid: item.nid } }"> -->
-            <span></span>
-          <!-- </router-link> -->
-          <p></p>
-        </Col>
-        <Col :span="2">
-          <Icon  type="close-circled"></Icon>
-        </Col>
-      </Row>
-    </Card>
-
-    <Card>
-      <Row type="flex" align="middle">
-        <Col :span="2">
-          <Icon type="chatbox-working"></Icon>
-        </Col>
-        <Col :span="20">
-          <!-- <router-link :to="{ name: 'newsInfo', params: { nid: item.nid } }"> -->
-            <span></span>
-          <!-- </router-link> -->
-          <p></p>
-        </Col>
-        <Col :span="2">
-          <Icon  type="close-circled"></Icon>
-        </Col>
-      </Row>
-    </Card>
-
-    <Card>
-      <Row type="flex" align="middle">
-        <Col :span="2">
-          <Icon type="chatbox-working"></Icon>
-        </Col>
-        <Col :span="20">
-          <!-- <router-link :to="{ name: 'newsInfo', params: { nid: item.nid } }"> -->
-            <span></span>
-          <!-- </router-link> -->
-          <p></p>
-        </Col>
-        <Col :span="2">
-          <Icon  type="close-circled"></Icon>
-        </Col>
-      </Row>
-    </Card>
-
-    <Card>
-      <Row type="flex" align="middle">
-        <Col :span="2">
-          <Icon type="chatbox-working"></Icon>
-        </Col>
-        <Col :span="20">
-          <!-- <router-link :to="{ name: 'newsInfo', params: { nid: item.nid } }"> -->
-            <span></span>
-          <!-- </router-link> -->
-          <p></p>
-        </Col>
-        <Col :span="2">
-          <Icon  type="close-circled"></Icon>
-        </Col>
-      </Row>
-    </Card>
-
-    <Card>
-      <Row type="flex" align="middle">
-        <Col :span="2">
-          <Icon type="chatbox-working"></Icon>
-        </Col>
-        <Col :span="20">
-          <!-- <router-link :to="{ name: 'newsInfo', params: { nid: item.nid } }"> -->
-            <span></span>
-          <!-- </router-link> -->
-          <p></p>
-        </Col>
-        <Col :span="2">
-          <Icon  type="close-circled"></Icon>
-        </Col>
-      </Row>
-    </Card>
-
-    <Card>
-      <Row type="flex" align="middle">
-        <Col :span="2">
-          <Icon type="chatbox-working"></Icon>
-        </Col>
-        <Col :span="20">
-          <!-- <router-link :to="{ name: 'newsInfo', params: { nid: item.nid } }"> -->
-            <span></span>
-          <!-- </router-link> -->
-          <p></p>
-        </Col>
-        <Col :span="2">
-          <Icon  type="close-circled"></Icon>
-        </Col>
-      </Row>
-    </Card>
-
-    <Page :total="sum" @on-change="pageChange" :page-size="pageSize" :current.sync="page" show-elevator></Page>
+    <Page></Page>
   </div>
 </template>
+
+<script>
+import axios from 'axios'
+export default {
+  data(){
+    return {
+      list: ""
+    }
+  },
+  methods: {
+    getNewsList: function() {
+      var self = this;
+      axios
+      .get('http://localhost:4040/api/v1/news/list').then(function(response){
+        self.list = response.data.data.reverse()
+      })
+    }
+  },
+  mounted: function() {
+     this.getNewsList()
+  }
+}
+</script>
 
 <style lang="stylus">
 .home-wrap
