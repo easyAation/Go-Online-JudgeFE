@@ -41,19 +41,31 @@
                 </div>
             </Menu>
             <div class="right">
-                <Button type="text" @click="login=true">Login / Register</Button>
+
+                <Dropdown v-if="isLogin" @on-click="profileAction">
+                    <a href="javascript:void(0)" style="font-size:15px">
+                        {{ profile.uid }}
+                        <Icon type="ios-arrow-down" />
+                    </a>
+                    <DropdownMenu slot="list">
+                        <DropdownItem name="profile">Profile</DropdownItem>
+                        <DropdownItem name="logout">Logout</DropdownItem>
+                    </DropdownMenu>
+                </Dropdown>
+                
+                <Button type="text" @click="login=true" v-else>Login / Register</Button>
                  <Modal
                     v-model="login"
                     @on-ok="ok"
                     @on-cancel="cancel">
-                    <Tabs>
+                    <Tabs v-model="mode">
                         <TabPane label="Login" name="login">
                             <Form ref="loginForm" :model="form" :rules="loginRules" :label-width="100">
                                 <FormItem class="loginuid" label="Username" prop="uid">
-                                    <Input></Input>
+                                    <Input v-model="form.uid"></Input>
                                 </FormItem>
                                 <FormItem class="loginpwd" label="Password" prop="pwd">
-                                    <Input type="password" @keyup.enter.native="submit"></Input>
+                                    <Input v-model="form.pwd" type="password" @keyup.enter.native="submit"></Input>
                                 </FormItem>
                             </Form>
                         </TabPane>
@@ -97,18 +109,69 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
      data () {
             return {
-                login: false
+                mode: 'login',
+                form: {
+                    "uid":'',
+                    "pwd":''
+                },
+                isLogin: localStorage.getItem("Flag"),
+                login: false,
+                profile: {
+                    'uid': "SpiffyEight77"
+                }
             }
         },
         methods: {
-            ok () {
-                this.$Message.info('Clicked ok');
+            submit () {
+                var self = this
+                var code
+                if(this.mode == 'login') {
+                    var data =  {
+                            "username": this.form.uid,
+                            "password": this.form.pwd
+                        }   
+                    axios
+                    .post('http://localhost:4040/api/v1/user/login',JSON.stringify(data)
+                    ).then(function(response){
+                            self.code = response.data.code
+                    })
+          
+                    if (self.code === 200) {
+                        localStorage.setItem("Flag",true)
+                        self.isLogin = true
+                        self.login = false
+                        self.$Message.success('Login successfully');
+                    } else {
+                        self.$Message.error('Wrong username or password');
+                    }
+
+                } else {
+                    axios
+                    .post('http://localhost:4040/api/v1/user/register',{
+                        params: {
+                            "username":"SpiffyEight77",
+                            "password":"864750987"
+                        }   
+                    }).then(function(response){
+                        
+                    })
+                    this.$Message.info('Clicked submit register')
+                    this.login = false
+                }
             },
             cancel () {
                 this.$Message.info('Clicked cancel');
+            },
+            profileAction (name) {
+                if(name === 'logout') {
+                    this.$Message.info('See you next time~');
+                    localStorage.removeItem("Flag")
+                    this.isLogin = false
+                }
             }
         }
 }

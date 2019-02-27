@@ -10,7 +10,8 @@ export default {
   name: 'App',
   components: {
     'oj-layout': Layout
-  }
+  },
+  // meta: {isLogin: false}
 }
 </script>
 

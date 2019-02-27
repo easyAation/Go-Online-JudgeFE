@@ -5,12 +5,12 @@
         <Page :total="sum" @on-change="pageChange" :page-size="pageSize" :current.sync="page" show-elevator></Page>
       </Col>
       <Col :span="2">
-        <Select v-model="type">
+        <Select>
           <Option v-for="item in options" :value="item.value" :key="item.value">{{ item.label }}</Option>
         </Select>
       </Col>
       <Col :span="4">
-        <Input v-model="content" icon="search" placeholder="Please input..." @keyup.enter.native="search"></Input>
+        <Input icon="search" placeholder="Please input..." @keyup.enter.native="search"></Input>
       </Col>
       <Col :span="2">
         <Button type="primary" @click="search">Search</Button>
@@ -23,28 +23,22 @@
         <th>Title</th>
         <th>Ratio</th>
         <th>Tags</th>
-        <th v-if="isAdmin">Visible</th>
-        <th v-if="isAdmin">Delete</th>
       </tr>
       <template v-for="(item, index) in list">
-        <tr v-if="isAdmin || item.status === status.Available">
+        <tr>
           <td>
-            <Icon v-if="solved.indexOf(item.pid) !== -1" type="checkmark-round"></Icon>
+            <Icon></Icon>
           </td>
-          <td>{{ item.pid }}</td>
+          <td>{{ item.id }}</td>
           <td>
-            <router-link :to="{ name: 'problemInfo', params: { pid: item.pid } }">
-              <Button type="text">{{ item.title }}</Button>
+            <router-link :to="{ name: 'problemInfo', params: { pid: item.id } }">
+              <Button type="text" style="color:#2d8cf0;">{{ item.title }}</Button>
             </router-link>
-            <Tooltip content="This item is reserved, no one could see this, except admin" placement="right">
-              <strong v-show="item.status === status.Reserve">Reserved</strong>
-            </Tooltip>
           <td>
-            <span>{{ item.solve / (item.submit + 0.000001) | formate }}</span>&nbsp;
-            (<router-link :to="{ name: 'status', query: { pid: item.pid, judge: judge.Accepted } }">
+            (<router-link :to="{ name: 'status', query: { pid: item.id} }">
               <Button type="text">{{ item.solve }}</Button>
             </router-link> /
-            <router-link :to="{ name: 'status', query: { pid: item.pid } }">
+            <router-link :to="{ name: 'status', query: { pid: item.id } }">
               <Button type="text">{{ item.submit }}</Button>
             </router-link>)
           </td>
@@ -55,14 +49,6 @@
               </router-link>
             </template>
           </td>
-          <td v-if="isAdmin">
-            <Tooltip content="Click to change status" placement="right">
-              <Button type="text" @click="change(item)">{{ problemVisible[item.status] }}</Button>
-            </Tooltip>
-          </td>
-          <td v-if="isAdmin">
-            <Button type="text" @click="del(item.pid)">Delete</Button>
-          </td>
         </tr>
       </template>
     </table>
@@ -70,8 +56,27 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
-  
+  data() {
+    return {
+      list: [],
+      options: []
+    }
+  },
+  methods: {
+    getProblemList: function() {
+      var self = this;
+      axios
+      .get('http://localhost:4040/api/v1/problem/list')
+      .then(function(response){
+        self.list = response.data.data
+      })
+    }
+  },
+  mounted: function() {
+     this.getProblemList()
+  },
 }
 </script>
 
