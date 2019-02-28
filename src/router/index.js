@@ -7,6 +7,7 @@ import NewsInfo from '../views/News/NewsInfo'
 import Problem from '../views/Problem/Problem'
 import ProblemSubmit from '../views/Problem/ProblemSubmit'
 import ProblemInfo from '../views/Problem/problemInfo'
+import Status from '../views/Status'
 
 Vue.use(Router)
 
@@ -49,6 +50,12 @@ const router =  new Router({
       ]
     },
     {
+      path: '/status',
+      name: 'status',
+      component: Status,
+      meta: { title: 'Status' } 
+    },
+    {
       path: '/contest',
       name: 'Contest',
       meta: { title: 'Contest' }
@@ -66,11 +73,6 @@ router.beforeEach((to, from, next) => {
   if (to.meta.title) {
     document.title = to.meta.title
   }
-
-  // let getFlag = localStorage.getItem("Flag");
-  // if (getFlag === "isLogin") {
-  //   localStorage.setItem("Flag", "isLogin")
-  // }
   next()
 })
 

@@ -20,10 +20,12 @@
                     <Icon type="ios-chatboxes" />
                         Discuss
                 </MenuItem>
+                <router-link to="/status">
                 <MenuItem name="status">
                     <Icon type="md-refresh" />
                         Status
                 </MenuItem>
+                </router-link>
                 <MenuItem name="rank">
                     <Icon type="ios-stats" />
                         Rank
@@ -44,7 +46,7 @@
 
                 <Dropdown v-if="isLogin" @on-click="profileAction">
                     <a href="javascript:void(0)" style="font-size:15px">
-                        {{ profile.uid }}
+                        {{ profile.username }}
                         <Icon type="ios-arrow-down" />
                     </a>
                     <DropdownMenu slot="list">
@@ -72,16 +74,16 @@
                         <TabPane label="Register" name="register">
                             <Form ref="registerForm" :model="form" :rules="registerRules" :label-width="100">
                                 <FormItem label="Username" prop="uid">
-                                    <Input></Input>
+                                    <Input v-model="form.uid" ></Input>
                                 </FormItem>
                                 <FormItem label="Nickname" prop="nick">
-                                    <Input></Input>
+                                    <Input v-model="form.name"></Input>
                                 </FormItem>
                                 <FormItem label="Password" prop="pwd">
-                                    <Input type="password"></Input>
+                                    <Input type="password" v-model="form.pwd"></Input>
                                 </FormItem>
                                 <FormItem label="CheckPwd" prop="checkPwd" class="checkpwd">
-                                    <Input type="password"></Input>
+                                    <Input type="password" v-model="form.rpwd"></Input>
                                 </FormItem>
                             </Form>
                         </TabPane>
@@ -100,7 +102,7 @@
                 <router-view></router-view>
             </Content>
             <Footer class="layout-footer-center">
-                <p>Server Time: {{ currentTime | timePretty }}</p>
+                <!-- <p>Server Time: {{ currentTime | timePretty }}</p> -->
                 <strong>Go-Online-Judge</strong> by <a href="https://github.com/SpiffyEight77/Go-Online-Judge" target="_blank">SpiffyEight77 <Icon type="social-github"></Icon>.</a>
                 The source code is licensed <a href="http://opensource.org/licenses/mit-license.php" target="_blank">MIT</a>.
             </Footer>
@@ -116,51 +118,67 @@ export default {
                 mode: 'login',
                 form: {
                     "uid":'',
-                    "pwd":''
+                    "pwd":'',
+                    "rpwd":'',
+                    "name":''
                 },
                 isLogin: localStorage.getItem("Flag"),
                 login: false,
                 profile: {
-                    'uid': "SpiffyEight77"
+                    "name": ''
                 }
             }
+        },
+        created() {
+            this.profile.username = localStorage.getItem("Username")
         },
         methods: {
             submit () {
                 var self = this
-                var code
                 if(this.mode == 'login') {
+
                     var data =  {
                             "username": this.form.uid,
                             "password": this.form.pwd
                         }   
+
                     axios
                     .post('http://localhost:4040/api/v1/user/login',JSON.stringify(data)
                     ).then(function(response){
-                            self.code = response.data.code
-                    })
-          
-                    if (self.code === 200) {
                         localStorage.setItem("Flag",true)
+                        self.profile = response.data.data
+                        localStorage.setItem("Username",self.profile.username)   
+                        localStorage.setItem("uid",self.profile.id)                     
                         self.isLogin = true
                         self.login = false
                         self.$Message.success('Login successfully');
-                    } else {
-                        self.$Message.error('Wrong username or password');
-                    }
-
-                } else {
-                    axios
-                    .post('http://localhost:4040/api/v1/user/register',{
-                        params: {
-                            "username":"SpiffyEight77",
-                            "password":"864750987"
-                        }   
-                    }).then(function(response){
-                        
+                    }).catch(function(err){
+                        self.$Message.error('User not exist or password error');
                     })
-                    this.$Message.info('Clicked submit register')
-                    this.login = false
+                } else {
+
+                    var self = this
+                    
+                    if(self.form.pwd !== self.form.rpwd) {
+                        self.$Message.error('repeat password error');
+                    } else {
+
+                    var data =  {
+                        "username": self.form.uid,
+                        "nickname": self.form.name,
+                        "password": self.form.pwd
+                    }   
+
+                    axios
+                    .post('http://localhost:4040/api/v1/user/register', JSON.stringify(data)
+                    ).then(function(response){
+                        self.$Message.success('Clicked submit register successfully')
+                        self.login = false
+                    }).catch(function(err) {
+                        self.$Message.error('register error');
+                    })
+
+                    }
                 }
             },
             cancel () {
@@ -168,8 +186,10 @@ export default {
             },
             profileAction (name) {
                 if(name === 'logout') {
-                    this.$Message.info('See you next time~');
+                    this.$Message.info('See you~');
                     localStorage.removeItem("Flag")
+                    localStorage.removeItem("Username")
+                    localStorage.removeItem("uid")
                     this.isLogin = false
                 }
             }

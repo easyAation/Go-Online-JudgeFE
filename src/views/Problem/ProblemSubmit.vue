@@ -5,11 +5,11 @@
     <Form v-model="solution">
       <FormItem label="Language" label-position="left">
         <Select v-model="solution.language">
-          <Option :value="1">C++ (G++)</Option>
-          <Option :value="2">C (GCC)</Option>
-          <Option :value="3">Java (openJDK)</Option>
-          <Option :vaule="4">Python 3.6</Option>
-          <Option :vaule="5">Python 2.7</Option>
+          <Option :value="11">C++ (g++ 6.4.0)</Option>
+          <Option :value="7">C (gcc 5.4.0)</Option>
+          <Option :value="28">Java (openJDK)</Option>
+          <Option :vaule="34">Python 3.6</Option>
+          <Option :vaule="36">Python 2.7</Option>
         </Select>
       </FormItem>
       <FormItem>
@@ -17,9 +17,10 @@
        </FormItem>
     </Form>
     </div>
+    <router-link to="/status">
     <Button type="primary" @click="submit" :disabled="!isLogin">Submit</Button>
+    </router-link>
     <Button style="margin-left: 8px" @click="reset">Reset</Button>
-    {{ res }}
     <p v-if="!isLogin">Please Log in First</p>
   </div>
 </template>
@@ -34,8 +35,7 @@ export default {
               "code":'',
               "language":'',
             },
-            title: '',
-            res: '',
+            title: ''
         }
     },
     methods: {
@@ -54,29 +54,17 @@ export default {
     submit() {
       var self = this
       var data = {
-          "source_code": self.solution.code,
-          "language_id": "4",
-          "number_of_runs": "1",
-          "stdin": "Judge0",
-          "expected_output": "hello, Judge0",
-          "cpu_time_limit": "2",
-          "cpu_extra_time": "0.5",
-          "wall_time_limit": "5",
-          "memory_limit": "128000",
-          "stack_limit": "64000",
-          "max_processes_and_or_threads": "30",
-          "enable_per_process_and_thread_time_limit": false,
-          "enable_per_process_and_thread_memory_limit": true,
-          "max_file_size": "1024"
+          "pid":self.id.toString(),
+          "uid":localStorage.getItem("uid").toString(),
+          "username":localStorage.getItem("Username").toString(),
+          "code": self.solution.code,
+          "language": self.solution.language.toString(),
         }
 
       axios
-      .post('http://localhost:3000/submissions?wait=true',JSON.stringify(data),{
-        headers: {
-          "Content-Type": "application/json"
-        }
-      }).then(function(response){
-
+      .post('http://localhost:4040/api/v1/submission/submit',JSON.stringify(data))
+      .then(function(response){
+          
       })
     }
   },
