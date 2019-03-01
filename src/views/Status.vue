@@ -36,7 +36,7 @@
         </Col>
       </Col>
       <Col :span="3">
-        <Button type="primary" @click="search" icon="search">Search</Button>
+        <Button type="primary" @click="search" icon="md-search">Search</Button>
       </Col>
     </Row>
     <Row class="pagination">
@@ -57,25 +57,25 @@
       </tr>
       
       <tr v-for="(item, index) in list" :key="item.id">
-        <td>{{ 1 }}</td>
+        <td>{{ item.id }}</td>
         <td>
           <router-link :to="{ name: 'problemInfo', params: { pid: item.memory } }">
-            {{ item.memory }}
+            {{ item.pid }}
           </router-link>
         </td>
         <td>
           <router-link :to="{ name: 'userInfo', params: { uid: item.memory } }">
-            <Button type="text" style="color:#2d8cf0;">{{ item.memory }}</Button>
+            <Button type="text" style="color:#2d8cf0;">{{ item.username }}</Button>
           </router-link>
         </td>
-        <td v-if="item.status.description === 'Accepted'" style="color:green">
-          {{ item.status.description }}
+        <td v-if="item.judge === 'Accepted'" style="color:green">
+          {{ item.judge }}
         </td>
-        <td v-else-if="item.status.description === 'Compilation Error'" style="color:blue">
-          {{ item.status.description }}
+        <td v-else-if="item.judge === 'Compilation Error'" style="color:purple">
+          {{ item.judge }}
         </td>
-        <td v-else-if="item.status.description === 'Wrong Answer'" style="color:red">
-          {{ item.status.description }}
+        <td v-else-if="item.judge === 'Wrong Answer'" style="color:red">
+          {{ item.judge }}
         </td>
         <td>{{ item.time * 100}}</td>
 
@@ -86,7 +86,7 @@
         <td v-else>
             {{item.memory}}
         </td>
-        <td >{{ item.language.name }}</td>
+        <td >{{ item.language }}</td>
         <td>{{ item.created_at | timePretty }}</td>
       </tr>
     </table>
@@ -107,16 +107,9 @@ export default {
         getSubmissions: function() {
             var self = this;
             axios
-            .get('http://localhost:3000/submissions',{
-                params: {
-                    "fields":"language,time,memory,created_at,status"
-                },
-                headers: {
-                    "X-Auth-User":"a1133bc6-a0f6-46bf-a2d8-6157418c6fe2",
-                    "X-Auth-Token":"f6583e60-b13b-4228-b554-2eb332ca64e7"
-                }
-            }).then(function(response){
-                self.list =  response.data.submissions
+            .get('http://localhost:4040/api/v1/submission/list')
+            .then(function(response) {
+              self.list = response.data.data.reverse()
             })
         }
     },

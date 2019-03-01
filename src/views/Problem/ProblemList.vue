@@ -72,10 +72,14 @@ export default {
       .then(function(response){
         self.list = response.data.data
       })
+    },
+    getSolveProblemList: function() {
+
     }
   },
   mounted: function() {
      this.getProblemList()
+     this.getSolveProblemList()
   },
 }
 </script>

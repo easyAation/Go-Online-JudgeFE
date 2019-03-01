@@ -7,6 +7,7 @@ import NewsInfo from '../views/News/NewsInfo'
 import Problem from '../views/Problem/Problem'
 import ProblemSubmit from '../views/Problem/ProblemSubmit'
 import ProblemInfo from '../views/Problem/problemInfo'
+import UserInfo from '../views/UserInfo'
 import Status from '../views/Status'
 
 Vue.use(Router)
@@ -65,6 +66,12 @@ const router =  new Router({
       name: 'faq',
       component: FAQ,
       meta: { title: 'FAQ' }
+    },
+    {
+      path: '/user/:uid',
+      name: 'userInfo',
+      component: UserInfo,
+      meta: { title: 'User Info' }
     }
   ]
 })

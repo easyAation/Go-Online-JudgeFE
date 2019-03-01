@@ -5,11 +5,11 @@
     <Form v-model="solution">
       <FormItem label="Language" label-position="left">
         <Select v-model="solution.language">
-          <Option :value="11">C++ (g++ 6.4.0)</Option>
-          <Option :value="7">C (gcc 5.4.0)</Option>
+          <Option :value="10">C++ (g++ 7.2.0)</Option>
+          <Option :value="4">C (gcc 7.2.0)</Option>
           <Option :value="28">Java (openJDK)</Option>
-          <Option :vaule="34">Python 3.6</Option>
-          <Option :vaule="36">Python 2.7</Option>
+          <Option :vaule="34">Python (3.6.0)</Option>
+          <Option :vaule="36">Python (2.7.9)</Option>
         </Select>
       </FormItem>
       <FormItem>
@@ -55,7 +55,7 @@ export default {
       var self = this
       var data = {
           "pid":self.id.toString(),
-          "uid":localStorage.getItem("uid").toString(),
+          "uid":localStorage.getItem("uid"),
           "username":localStorage.getItem("Username").toString(),
           "code": self.solution.code,
           "language": self.solution.language.toString(),

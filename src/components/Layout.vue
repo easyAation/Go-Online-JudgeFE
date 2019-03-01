@@ -125,7 +125,8 @@ export default {
                 isLogin: localStorage.getItem("Flag"),
                 login: false,
                 profile: {
-                    "name": ''
+                    "name": '',
+                    "uid": '',
                 }
             }
         },
@@ -148,7 +149,7 @@ export default {
                         localStorage.setItem("Flag",true)
                         self.profile = response.data.data
                         localStorage.setItem("Username",self.profile.username)   
-                        localStorage.setItem("uid",self.profile.id)                     
+                        localStorage.setItem("uid",self.profile.uid)                     
                         self.isLogin = true
                         self.login = false
                         self.$Message.success('Login successfully');
@@ -185,12 +186,18 @@ export default {
                 this.$Message.info('Clicked cancel');
             },
             profileAction (name) {
+                var self = this
                 if(name === 'logout') {
-                    this.$Message.info('See you~');
+                    this.$Message.success('See you~');
                     localStorage.removeItem("Flag")
                     localStorage.removeItem("Username")
                     localStorage.removeItem("uid")
                     this.isLogin = false
+                } else if(name === 'profile') {
+                    this.$router.push({
+                        name: 'userInfo',
+                        params: { uid: localStorage.getItem('uid')}
+                    })
                 }
             }
         }
