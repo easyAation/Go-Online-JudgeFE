@@ -103,7 +103,7 @@
             </Content>
             <Footer class="layout-footer-center">
                 <!-- <p>Server Time: {{ currentTime | timePretty }}</p> -->
-                <strong>Go-Online-Judge</strong> by <a href="https://github.com/SpiffyEight77/Go-Online-Judge" target="_blank">SpiffyEight77 <Icon type="social-github"></Icon>.</a>
+                <strong>Go-Online-Judge</strong> by <a href="https://github.com/SpiffyEight77/Go-Online-Judge" target="_blank">SpiffyEight77 <Icon type="logo-octocat" /></Icon>.</a>
                 The source code is licensed <a href="http://opensource.org/licenses/mit-license.php" target="_blank">MIT</a>.
             </Footer>
         </Layout>

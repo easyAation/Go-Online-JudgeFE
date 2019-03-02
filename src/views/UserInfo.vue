@@ -3,19 +3,19 @@
     <Row>
       <Col :span="6">
         <img src="../assets/logo.jpg" alt="">
-        <h1 style="margin-bottom: 20px">{{ user.uid }}</h1>
-        <Icon type="person"></Icon>&nbsp;&nbsp;{{ `Nick: ${user.nick}` }}
-        <div class="group" v-if="0 > 0">
-          <Icon type="person-stalker"></Icon>&nbsp;&nbsp;{{ `Group: ${group}` }}
+        <h1 style="margin-bottom: 20px">{{ user.username }}</h1>
+        <Icon size="20" type="ios-person"></Icon>&nbsp;&nbsp;{{ `Nick: ${user.nickname}` }}
+        <div class="ios-people" v-if="1 > 0">
+          <Icon size="20" type="ios-people"></Icon>&nbsp;&nbsp;{{ `Group: ${group}` }}
         </div>
-        <div class="motto" v-if="user.motto">
-          <Icon type="edit"></Icon>&nbsp;&nbsp;{{ `Motto: ${user.motto}` }}
+        <div class="motto" v-if="1">
+          <Icon size="20" type="ios-create"></Icon>&nbsp;&nbsp;{{ `Motto: ${user.motto}` }}
         </div>
-        <div v-if="user.mail">
-          <Icon type="email"></Icon>&nbsp;&nbsp;{{ `Mail: ${user.mail}` }}
+        <div v-if="1">
+          <Icon size="20" type="ios-mail"></Icon>&nbsp;&nbsp;{{ `Mail: ${user.mail}` }}
         </div>
-        <div v-if="user.school">
-          <Icon type="university"></Icon>&nbsp;&nbsp;{{ `School: ${user.school}` }}
+        <div v-if="1">
+          <Icon size="20" type="ios-school"></Icon>&nbsp;&nbsp;{{ `School: ${user.school}` }}
         </div>
         <Row class="border" type="flex" justify="center">
           <Col :span="12">
@@ -94,11 +94,32 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
     data() {
         return {
             user: "",
         }
+    },
+    methods: {
+      getUserInfo: function() {
+        var self = this
+        axios
+        .get('http://localhost:4040/api/v1/user/profile/detail',{
+          params: {
+            "uid": self.uid
+          }
+        })
+        .then(function(response) {
+          self.user = response.data.data
+        })
+      }
+    },
+    mounted: function() {
+      this.getUserInfo()
+    },
+    created: function() {
+      this.uid = this.$route.params.uid
     }
 }
 </script>
