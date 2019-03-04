@@ -23,7 +23,7 @@
             <h4>Solved</h4>
           </Col>
           <Col :span="12">
-            <h1>{{ user.submit }}</h1>
+            <h1>{{ user.submission }}</h1>
             <h4>Submit</h4>
           </Col>
         </Row>

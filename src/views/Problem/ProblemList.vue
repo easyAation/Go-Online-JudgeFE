@@ -27,7 +27,8 @@
       <template v-for="(item, index) in list">
         <tr>
           <td>
-            <Icon></Icon>
+            <Icon v-if="isSolved(item.id,uid) !== false" size="25" type="ios-checkmark"></Icon>
+            <Icon v-else></Icon>
           </td>
           <td>{{ item.id }}</td>
           <td>
@@ -36,10 +37,10 @@
             </router-link>
           <td>
             (<router-link :to="{ name: 'status', query: { pid: item.id} }">
-              <Button type="text">{{ item.solve }}</Button>
+              <Button type="text" style="color:#2d8cf0">{{ item.solve }}</Button>
             </router-link> /
             <router-link :to="{ name: 'status', query: { pid: item.id } }">
-              <Button type="text">{{ item.submit }}</Button>
+              <Button type="text" style="color:#2d8cf0">{{ item.submission }}</Button>
             </router-link>)
           </td>
           <td>
@@ -57,11 +58,13 @@
 
 <script>
 import axios from 'axios'
+import { solved, unsolve} from '../../utils/submision'
 export default {
   data() {
     return {
       list: [],
-      options: []
+      options: [],
+      uid: localStorage.getItem('uid')
     }
   },
   methods: {
@@ -73,13 +76,12 @@ export default {
         self.list = response.data.data
       })
     },
-    getSolveProblemList: function() {
-
+    isSolved(pid,uid) {
+      return solved(pid,uid)
     }
   },
   mounted: function() {
      this.getProblemList()
-     this.getSolveProblemList()
   },
 }
 </script>

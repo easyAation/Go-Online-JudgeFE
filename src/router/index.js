@@ -9,6 +9,7 @@ import ProblemSubmit from '../views/Problem/ProblemSubmit'
 import ProblemInfo from '../views/Problem/problemInfo'
 import UserInfo from '../views/UserInfo'
 import Status from '../views/Status'
+import ContestList from '../views/ContestList'
 
 Vue.use(Router)
 
@@ -72,6 +73,12 @@ const router =  new Router({
       name: 'userInfo',
       component: UserInfo,
       meta: { title: 'User Info' }
+    },
+    {
+      path: '/contests',
+      name: 'contestList',
+      component: ContestList,
+      meta: { title:"Contest List" }
     }
   ]
 })

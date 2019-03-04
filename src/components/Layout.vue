@@ -30,10 +30,12 @@
                     <Icon type="ios-stats" />
                         Rank
                 </MenuItem>
+                <router-link to="/contests">
                 <MenuItem name="contest">
                     <Icon type="md-trophy" />
                         Contest
                 </MenuItem>
+                </router-link>
                 <router-link to="/faq">
                 <MenuItem name="faq">
                     <Icon type="ios-help-circle" />
@@ -102,7 +104,7 @@
                 <router-view></router-view>
             </Content>
             <Footer class="layout-footer-center">
-                <!-- <p>Server Time: {{ currentTime | timePretty }}</p> -->
+                <p>Server Time: {{ currentTime | timePretty }}</p>
                 <strong>Go-Online-Judge</strong> by <a href="https://github.com/SpiffyEight77/Go-Online-Judge" target="_blank">SpiffyEight77 <Icon type="logo-octocat" /></Icon>.</a>
                 The source code is licensed <a href="http://opensource.org/licenses/mit-license.php" target="_blank">MIT</a>.
             </Footer>
