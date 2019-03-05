@@ -69,7 +69,7 @@ export default {
   mounted: function() {
      this.getProblemDetail()
   },
-    created() {
+  created() {
       this.id = this.$route.params.pid;
   }
 }

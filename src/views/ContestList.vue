@@ -12,7 +12,7 @@
         <tr>
           <td>{{ item.id }}</td>
           <td>
-            <router-link to="">
+            <router-link :to="{ name: 'contestOverview', params: { cid: item.id } }">
             <span style="color:#2d8cf0" @click="visit(item)">{{ item.title }}</span>
             </router-link>
           <td>

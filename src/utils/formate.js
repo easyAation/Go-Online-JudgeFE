@@ -10,6 +10,10 @@ function timePretty (time) {
     return moment(time).format('YYYY-MM-DD HH:mm:ss')
 }
 
+function timePercent (time,start_time,end_time) {
+  return  parseInt( (moment(time).diff(start_time, Number, false)) / (moment(end_time).diff(start_time, Number, false)) * 100 )
+}
+
 function timeagoPretty (time) {
   return moment(parseInt(time)).fromNow()
 }
@@ -27,5 +31,6 @@ export {
   formate,
   timePretty,
   timeContest,
-  timeagoPretty
+  timeagoPretty,
+  timePercent
 }

@@ -10,6 +10,8 @@ import ProblemInfo from '../views/Problem/problemInfo'
 import UserInfo from '../views/UserInfo'
 import Status from '../views/Status'
 import ContestList from '../views/ContestList'
+import Contest from '../views/Contest/Contest'
+import ContestOverview from '../views/Contest/contestOverview'
 
 Vue.use(Router)
 
@@ -58,11 +60,6 @@ const router =  new Router({
       meta: { title: 'Status' } 
     },
     {
-      path: '/contest',
-      name: 'Contest',
-      meta: { title: 'Contest' }
-    },
-    {
       path: '/faq',
       name: 'faq',
       component: FAQ,
@@ -79,7 +76,20 @@ const router =  new Router({
       name: 'contestList',
       component: ContestList,
       meta: { title:"Contest List" }
-    }
+    },
+    {
+      path: '/contest/:cid',
+      component: Contest,
+      meta: { isLogin: true },
+      children: [
+        {
+          path: '',
+          component: ContestOverview,
+          name: 'contestOverview',
+          meta: { title: 'Contest Overview', isLogin: true }
+        }
+      ]
+    },
   ]
 })
 
