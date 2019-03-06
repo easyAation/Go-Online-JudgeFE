@@ -12,13 +12,14 @@
     </Card>
     <Tabs :value="display" @on-click="handleClick">
       <TabPane label="Overview" name="contestOverview"></TabPane>
-      <TabPane label="Problem" name="contestProblem"></TabPane>
-      <TabPane label="Submit" name="contestSubmit"></TabPane>
+      <TabPane label="Problem" name="contestProblemInfo"></TabPane>
+      <TabPane label="Submit" name="contestProblemSubmit"></TabPane>
       <TabPane label="Status" name="contestStatus"></TabPane>
       <TabPane label="Ranklist" name="contestRanklist"></TabPane>
       <!-- <TabPane label="Edit" name="contestEdit" v-if="isAdmin"></TabPane> -->
     </Tabs>
-    <router-view v-if="contest.contest && contest.contest.id"></router-view>
+    <!-- <router-view v-if="contest.contest && contest.contest.id"></router-view> -->
+    <router-view></router-view>
     <!-- 为了确保之后的 children 能拿到 contest -->
   </div>
 </template>
@@ -29,7 +30,8 @@ import { formate, timePretty, timeContest, timeagoPretty, timePercent }from '../
 export default {
     data() {
         return {
-            contest: []
+            contest: [],
+            display: ''
         }
     },
     methods: {
@@ -56,14 +58,27 @@ export default {
             } else {
                 return timePercent(currentTime,start_time,end_time)
             }
+        },
+        handleClick(name) {
+          if (name === 'contestProblemInfo' || name === 'contestProblemSubmit') {
+            this.$router.push({ name: name, params: { cid: this.cid, pid: 1, id: 1 } })
+          } else {
+            this.$router.push({ name: name, params: { cid: this.cid } })
+          }
         }
     },
     mounted: function() {
         this.getContestOverView()
     },
     created() {
+        this.display = this.$route.name
         this.cid = this.$route.params.cid
+    },
+    watch: {
+      '$route' (to, from) {
+      this.display = to.name
     }
+  }
 }
 </script>
 

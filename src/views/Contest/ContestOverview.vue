@@ -14,9 +14,10 @@
         <td>
           <Icon v-if="1 !== -1" type="checkmark-round"></Icon>
         </td>
+        <!-- <td>{{ index + 1 }}</td> -->
         <td>{{ index + 1 }}</td>
         <td>
-          <router-link :to="{ name: 'contestProblem', params: {  } }">
+          <router-link :to="{ name: 'contestProblemInfo', params: { pid: item.id,cid: cid, id: index+1 } }">
             <Button type="text" style="color:#2d8cf0">{{ item.title }}</Button>
           </router-link>
         <td>
@@ -33,7 +34,8 @@ import axios from 'axios'
 export default {
     data() {
       return {
-        overview: []
+        overview: [],
+        cid: ''
       }
     },
     methods: {

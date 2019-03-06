@@ -12,16 +12,23 @@ import Status from '../views/Status'
 import ContestList from '../views/ContestList'
 import Contest from '../views/Contest/Contest'
 import ContestOverview from '../views/Contest/contestOverview'
+import ContestProblemSubmit from '../views/Contest/ContestSubmit'
+import ContestProblemInfo from '../views/Contest/ContestProblemInfo'
 
 Vue.use(Router)
 
 const router =  new Router({
+  mode: 'history',
   routes: [
     {
       path: '/',
       name: 'Home',
       component: Home,
       meta: { title: 'Home', isLogin: false }
+    },
+    {
+      path: '/admin',
+      name: 'Admin',
     },
     {
       name: 'newsInfo',
@@ -87,6 +94,18 @@ const router =  new Router({
           component: ContestOverview,
           name: 'contestOverview',
           meta: { title: 'Contest Overview', isLogin: true }
+        },
+        {
+          path: 'problem/:pid/submit',
+          component: ContestProblemSubmit,
+          name: 'contestProblemSubmit',
+          meta: { title: 'Problem Submit' }
+        },
+        {
+          path: 'problem/:pid/:id',
+          component: ContestProblemInfo,
+          name: 'contestProblemInfo',
+          meta: { title: 'Problem Info' }
         }
       ]
     },
