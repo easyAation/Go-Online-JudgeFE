@@ -88,7 +88,5 @@ h1
   
 .ivu-form-item-label
     font-size: 16px
-
-
 </style>
 

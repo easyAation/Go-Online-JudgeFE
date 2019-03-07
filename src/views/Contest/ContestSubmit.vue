@@ -1,6 +1,6 @@
 <template lang="html">
   <div>
-    <h1>{{ this.$route.params.pid }}:  {{ title }}</h1>
+    <h1>{{ index }}:  {{ title }}</h1>
     <div>
     <Form v-model="solution">
       <FormItem label="Language" label-position="left">
@@ -17,7 +17,7 @@
        </FormItem>
     </Form>
     </div>
-    <router-link to="/status">
+    <router-link :to="{ name:'contestStatus' }">
     <Button type="primary" @click="submit" :disabled="!isLogin">Submit</Button>
     </router-link>
     <Button style="margin-left: 8px" @click="reset">Reset</Button>
@@ -32,28 +32,51 @@ export default {
         return {
             solution: [],
             isLogin: localStorage.getItem('Flag'),
-            title: ''
+            title: '',
+            index: '',
         }
     },
     methods: {
         getProblemDetail: function() {
             var self = this;
             axios
-            .get('http://localhost:4040/api/v1/problem/detail',{
+            .get('http://localhost:4040/api/v1/contest/problem/detail',{
                 params: {
-                    problem_id: self.id
+                    problem_index: self.id,
+                    contest_id: self.cid
                 }
             })
             .then(function(response){
                 self.title = response.data.data.title
+                self.index = response.data.data.index
             })
+        },
+        submit() {
+          var self = this
+          var data = {
+          "pid":self.id.toString(),
+          "uid":localStorage.getItem("uid"),
+          "cid":self.cid.toString(),
+          "index":self.id.toString(),
+          "username":localStorage.getItem("Username").toString(),
+          "code": self.solution.code,
+          "language": self.solution.language.toString(),
         }
+
+      axios
+      .post('http://localhost:4040/api/v1/contest/problem/submit',JSON.stringify(data))
+      .then(function(response){
+          
+      })
+    }
     },
     mounted: function() {
         this.getProblemDetail()
     },
     created() {
-      this.id = this.$route.params.pid;
+      // this.id = this.$route.params.pid;
+      this.cid = this.$route.params.cid
+      this.id = this.$route.params.id
   }
 }
 </script>
@@ -64,4 +87,5 @@ h1
   margin-top: 10px
   margin-bottom: 20px
   text-align:center
+  font-size: 30px
 </style>

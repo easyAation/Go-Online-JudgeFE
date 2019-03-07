@@ -14,6 +14,7 @@ import Contest from '../views/Contest/Contest'
 import ContestOverview from '../views/Contest/contestOverview'
 import ContestProblemSubmit from '../views/Contest/ContestSubmit'
 import ContestProblemInfo from '../views/Contest/ContestProblemInfo'
+import ContestStatus from '../views/Contest/ContestStatus'
 
 Vue.use(Router)
 
@@ -96,16 +97,22 @@ const router =  new Router({
           meta: { title: 'Contest Overview', isLogin: true }
         },
         {
-          path: 'problem/:pid/submit',
+          path: 'problem/:id/submit',
           component: ContestProblemSubmit,
           name: 'contestProblemSubmit',
           meta: { title: 'Problem Submit' }
         },
         {
-          path: 'problem/:pid/:id',
+          path: 'problem/:id',
           component: ContestProblemInfo,
           name: 'contestProblemInfo',
           meta: { title: 'Problem Info' }
+        },
+        {
+          path: 'status',
+          component: ContestStatus,
+          name: 'contestStatus',
+          meta: { title: 'Contest Status' }
         }
       ]
     },

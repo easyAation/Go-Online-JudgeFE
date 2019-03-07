@@ -27,8 +27,9 @@
       <template v-for="(item, index) in list">
         <tr>
           <td>
-            <Icon v-if="isSolved(item.id,uid) !== false" size="25" type="ios-checkmark"></Icon>
-            <Icon v-else></Icon>
+            <!-- <Icon v-if="isSolved(item.id,uid) !== false" size="25" type="ios-checkmark"></Icon> -->
+            <!-- <Icon v-else></Icon> -->
+            <Icon></Icon>
           </td>
           <td>{{ item.id }}</td>
           <td>

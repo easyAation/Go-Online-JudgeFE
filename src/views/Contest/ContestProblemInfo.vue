@@ -7,7 +7,7 @@
       </li>
     </ul>
     <div class="proinfo-wrap">
-        <slot name="title"><h1>{{ id }}:  {{ problem.title }}</h1></slot>
+        <slot name="title"><h1>{{ problem.index }}:  {{ problem.title }}</h1></slot>
         <!-- <h5>Time Limit: {{ problem.time }}MS&nbsp;&nbsp;&nbsp;Memory Limit: {{ problem.memory }}KB</h5> -->
         <h5>Time Limit: 1000MS&nbsp;&nbsp;&nbsp;Memory Limit:  32768KB</h5>
         <h2 class="text-primary">Description</h2>
@@ -49,29 +49,29 @@ export default {
     data() {
         return {
             problem: '',
-            id: '',
             proIndex: '',
-            totalProblems: '',
             totalProblems: ''
         }
     },
     methods: {
     getProblemDetail: function() {
-      this.pid = this.$route.params.pid
+      // this.pid = this.$route.params.pid
       this.cid = this.$route.params.cid
       this.id = this.$route.params.id
       var self = this;
 
-     self.proIndex =  parseInt(self.$route.params.id)
+    //  self.proIndex =  parseInt(self.$route.params.id)
 
       axios
-      .get('http://localhost:4040/api/v1/problem/detail',{
+      .get('http://localhost:4040/api/v1/contest/problem/detail',{
           params: {
-              problem_id: self.pid
+              problem_index: self.id,
+              contest_id: self.cid
           }
       })
       .then(function(response){
         self.problem = response.data.data
+        self.proIndex =  parseInt(self.problem.index)
       })
     },
     getContestOverView: function() {
@@ -96,7 +96,7 @@ export default {
     pageChange (val) {
       this.$router.push({
         name: 'contestProblemInfo',
-        params: { id: val, pid: this.pid, cid: this.cid }
+        params: { id: val, cid: this.cid }
       })
     },
   },

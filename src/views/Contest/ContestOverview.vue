@@ -15,14 +15,14 @@
           <Icon v-if="1 !== -1" type="checkmark-round"></Icon>
         </td>
         <!-- <td>{{ index + 1 }}</td> -->
-        <td>{{ index + 1 }}</td>
+        <td>{{ item.index }}</td>
         <td>
-          <router-link :to="{ name: 'contestProblemInfo', params: { pid: item.id,cid: cid, id: index+1 } }">
+          <router-link :to="{ name: 'contestProblemInfo', params: { pid: item.id,cid: cid, id: item.index } }">
             <Button type="text" style="color:#2d8cf0">{{ item.title }}</Button>
           </router-link>
         <td>
-          <span>{{ 1 / (2 + 0.000001) | formate }}</span>&nbsp;
-          ({{ 1 }} / {{ 2 }})
+          <!-- <span>{{ item.solve / (item.submision + 0.000001) | formate }}</span>&nbsp; -->
+          ({{ item.solve }} / {{ item.submission }})
         </td>
       </tr>
     </table>

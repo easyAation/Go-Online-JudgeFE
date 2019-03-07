@@ -59,7 +59,7 @@
       <tr v-for="(item, index) in list" :key="item.id">
         <td>{{ item.id }}</td>
         <td>
-          <router-link :to="{ name: 'problemInfo', params: { pid: item.pid } }">
+          <router-link :to="{ name: 'contestProblemInfo', params: { id: item.index } }">
             {{ item.pid }}
           </router-link>
         </td>
@@ -107,7 +107,7 @@ export default {
         getSubmissions: function() {
             var self = this;
             axios
-            .get('http://localhost:4040/api/v1/submission/list')
+            .get('http://localhost:4040/api/v1/contest/submission')
             .then(function(response) {
               self.list = response.data.data.reverse()
             })
@@ -120,7 +120,7 @@ export default {
 </script>
 
 <style lang="stylus">
-@import '../styles/common'
+@import '../../styles/common'
 .filter
   margin-bottom: 20px
   label
