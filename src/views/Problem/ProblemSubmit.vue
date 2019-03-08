@@ -27,6 +27,7 @@
 
 <script>
 import axios from 'axios'
+import APIURL from '../../utils/api.js'
 export default {
     data() {
         return {
@@ -42,7 +43,7 @@ export default {
     getProblemDetail: function() {
       var self = this;
       axios
-      .get('http://localhost:4040/api/v1/problem/detail',{
+      .get(APIURL + '/api/v1/problem/detail',{
           params: {
               problem_id: self.id
           }
@@ -62,7 +63,7 @@ export default {
         }
 
       axios
-      .post('http://localhost:4040/api/v1/submission/submit',JSON.stringify(data))
+      .post(APIURL + '/api/v1/submission/submit',JSON.stringify(data))
       .then(function(response){
           
       })

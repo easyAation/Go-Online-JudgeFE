@@ -59,6 +59,7 @@
 
 <script>
 import axios from 'axios'
+import APIURL from '../../utils/api.js'
 import { solved, unsolve} from '../../utils/submision'
 export default {
   data() {
@@ -72,7 +73,7 @@ export default {
     getProblemList: function() {
       var self = this;
       axios
-      .get('http://localhost:4040/api/v1/problem/list')
+      .get(APIURL + '/api/v1/problem/list')
       .then(function(response){
         self.list = response.data.data
       })

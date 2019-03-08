@@ -23,6 +23,7 @@
 
 <script>
 import axios from 'axios'
+import APIURL from '../utils/api.js'
 export default {
   data(){
     return {
@@ -33,7 +34,7 @@ export default {
     getNewsList: function() {
       var self = this;
       axios
-      .get('http://localhost:4040/api/v1/news/list').then(function(response){
+      .get( APIURL + '/api/v1/news/list').then(function(response){
         self.list = response.data.data.reverse()
       })
     }

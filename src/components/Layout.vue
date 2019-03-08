@@ -114,6 +114,7 @@
 
 <script>
 import axios from 'axios'
+import APIURL from '../utils/api.js'
 export default {
      data () {
             return {
@@ -146,7 +147,7 @@ export default {
                         }   
 
                     axios
-                    .post('http://localhost:4040/api/v1/user/login',JSON.stringify(data)
+                    .post(APIURL + '/api/v1/user/login',JSON.stringify(data)
                     ).then(function(response){
                         localStorage.setItem("Flag",true)
                         self.profile = response.data.data
@@ -173,7 +174,7 @@ export default {
                     }   
 
                     axios
-                    .post('http://localhost:4040/api/v1/user/register', JSON.stringify(data)
+                    .post(APIURL + '/api/v1/user/register', JSON.stringify(data)
                     ).then(function(response){
                         self.$Message.success('Clicked submit register successfully')
                         self.login = false

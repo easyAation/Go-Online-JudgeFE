@@ -45,6 +45,7 @@
 
 <script>
 import axios from 'axios'
+import APIURL from '../../utils/api.js'
 export default {
     data() {
         return {
@@ -63,7 +64,7 @@ export default {
     //  self.proIndex =  parseInt(self.$route.params.id)
 
       axios
-      .get('http://localhost:4040/api/v1/contest/problem/detail',{
+      .get(APIURL + '/api/v1/contest/problem/detail',{
           params: {
               problem_index: self.id,
               contest_id: self.cid
@@ -77,7 +78,7 @@ export default {
     getContestOverView: function() {
         var self = this
         axios
-        .get('http://localhost:4040/api/v1/contest/detail',{
+        .get(APIURL + '/api/v1/contest/detail',{
           params : {
             contest_id : self.cid
           }
