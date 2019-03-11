@@ -27,7 +27,6 @@
 
 <script>
 import axios from 'axios'
-import APIURL from '../../utils/api.js'
 export default {
     data() {
         return {
@@ -41,7 +40,7 @@ export default {
         getProblemDetail: function() {
             var self = this;
             axios
-            .get(APIURL + '/api/v1/contest/problem/detail',{
+            .get(process.env.BASE_API + '/api/v1/contest/problem/detail',{
                 params: {
                     problem_index: self.id,
                     contest_id: self.cid
@@ -65,7 +64,7 @@ export default {
         }
 
       axios
-      .post(APIURL + '/api/v1/contest/problem/submit',JSON.stringify(data))
+      .post(process.env.BASE_API + '/api/v1/contest/problem/submit',JSON.stringify(data))
       .then(function(response){
           
       })

@@ -95,7 +95,6 @@
 
 <script>
 import axios from 'axios'
-import APIURL from '../utils/api.js'
 export default {
     data() {
         return {
@@ -108,7 +107,7 @@ export default {
         getSubmissions: function() {
             var self = this;
             axios
-            .get(APIURL + '/api/v1/submission/list')
+            .get(process.env.BASE_API + '/api/v1/submission/list')
             .then(function(response) {
               self.list = response.data.data.reverse()
             })

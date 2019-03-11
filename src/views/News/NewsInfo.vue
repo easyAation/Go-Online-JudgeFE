@@ -15,7 +15,6 @@
 
 <script>
 import axios from 'axios'
-import APIURL from '../../utils/api.js'
 export default {
     data() {
         return {
@@ -26,7 +25,7 @@ export default {
     getNewsDetail: function() {
       var self = this;
       axios
-      .get(APIURL + '/api/v1/news/detail',{
+      .get(process.env.BASE_API + '/api/v1/news/detail',{
           params: {
               news_id: self.id
           }

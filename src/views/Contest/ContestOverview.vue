@@ -31,7 +31,6 @@
 
 <script>
 import axios from 'axios'
-import APIURL from '../../utils/api.js'
 export default {
     data() {
       return {
@@ -43,7 +42,7 @@ export default {
       getContestOverView: function() {
         var self = this
         axios
-        .get(APIURL + '/api/v1/contest/detail',{
+        .get(process.env.BASE_API + '/api/v1/contest/detail',{
           params : {
             contest_id : self.cid
           }

@@ -26,7 +26,6 @@
 
 <script>
 import axios from 'axios'
-import APIURL from '../../utils/api.js'
 import { formate, timePretty, timeContest, timeagoPretty, timePercent }from '../../utils/formate'
 export default {
     data() {
@@ -39,7 +38,7 @@ export default {
         getContestOverView: function() {
             var self = this
             axios
-            .get(APIURL + '/api/v1/contest/detail',{
+            .get(process.env.BASE_API + '/api/v1/contest/detail',{
                 params : {
                     contest_id : self.cid
                 }

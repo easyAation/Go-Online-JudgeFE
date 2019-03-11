@@ -42,7 +42,6 @@
 
 <script>
 import axios from 'axios'
-import APIURL from '../utils/api.js'
 import { formate, timePretty, timeContest, timeagoPretty }from '../utils/formate'
 export default {
     data() {
@@ -54,7 +53,7 @@ export default {
         getContestList: function() {
             var self = this
             axios
-            .get(APIURL + '/api/v1/contest/list')
+            .get(process.env.BASE_API + '/api/v1/contest/list')
             .then(function(response) {
                 self.list = response.data.data.reverse()
             })

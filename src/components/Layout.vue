@@ -52,6 +52,7 @@
                         <Icon type="ios-arrow-down" />
                     </a>
                     <DropdownMenu slot="list">
+                        <DropdownItem v-if="profile.username === 'admin'" name="admin">Admin</DropdownItem>
                         <DropdownItem name="profile">Profile</DropdownItem>
                         <DropdownItem name="logout">Logout</DropdownItem>
                     </DropdownMenu>
@@ -114,7 +115,6 @@
 
 <script>
 import axios from 'axios'
-import APIURL from '../utils/api.js'
 export default {
      data () {
             return {
@@ -147,7 +147,7 @@ export default {
                         }   
 
                     axios
-                    .post(APIURL + '/api/v1/user/login',JSON.stringify(data)
+                    .post(process.env.BASE_API + '/api/v1/user/login',JSON.stringify(data)
                     ).then(function(response){
                         localStorage.setItem("Flag",true)
                         self.profile = response.data.data
@@ -174,7 +174,7 @@ export default {
                     }   
 
                     axios
-                    .post(APIURL + '/api/v1/user/register', JSON.stringify(data)
+                    .post(process.env.BASE_API + '/api/v1/user/register', JSON.stringify(data)
                     ).then(function(response){
                         self.$Message.success('Clicked submit register successfully')
                         self.login = false

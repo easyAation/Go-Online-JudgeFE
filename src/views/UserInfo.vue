@@ -95,7 +95,6 @@
 
 <script>
 import axios from 'axios'
-import APIURL from '../utils/api.js'
 export default {
     data() {
         return {
@@ -106,7 +105,7 @@ export default {
       getUserInfo: function() {
         var self = this
         axios
-        .get(APIURL + '/api/v1/user/profile/detail',{
+        .get(process.env.BASE_API + '/api/v1/user/profile/detail',{
           params: {
             "uid": self.uid
           }
