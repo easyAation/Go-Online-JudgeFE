@@ -115,7 +115,10 @@ export default {
     },
     mounted: function() {
         this.getSubmissions()
-  },
+    },
+    created() {
+      this.cid = this.$route.params.cid
+    }
 }
 </script>
 
