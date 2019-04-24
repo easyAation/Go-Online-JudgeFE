@@ -24,6 +24,7 @@
         <th>Ratio</th>
         <th>Tags</th>
       </tr>
+
       <template v-for="(item, index) in list">
         <tr>
           <td>
@@ -34,12 +35,12 @@
           <td>{{ item.id }}</td>
           <td>
             <router-link :to="{ name: 'problemInfo', params: { pid: item.id } }">
-              <Button type="text" style="color:#2d8cf0;">{{ item.title }}</Button>
+              <Button type="text" style="color:#2d8cf0;">{{ item.name }}</Button>
             </router-link>
           <td>
             (<router-link :to="{ name: 'status', query: { pid: item.id} }">
               <Button type="text" style="color:#2d8cf0">{{ item.solve }}</Button>
-            </router-link> /
+            </router-link>
             <router-link :to="{ name: 'status', query: { pid: item.id } }">
               <Button type="text" style="color:#2d8cf0">{{ item.submission }}</Button>
             </router-link>)
@@ -74,7 +75,7 @@ export default {
       axios
       .get(process.env.BASE_API + '/api/v1/problem/list')
       .then(function(response){
-        self.list = response.data.data
+        self.list = response.data.list
       })
     },
     isSolved(pid,uid) {
