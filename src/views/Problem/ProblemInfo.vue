@@ -2,7 +2,7 @@
   <div class="proinfo-wrap">
     <!-- <problem :problem="problem" /> -->
     <div class="proinfo-wrap">
-        <slot name="title"><h1>{{ problem.id }}:  {{ problem.title }}</h1></slot>
+        <slot name="title"><h1>{{ problem.id }}:  {{ problem.name }}</h1></slot>
         <!-- <h5>Time Limit: {{ problem.time }}MS&nbsp;&nbsp;&nbsp;Memory Limit: {{ problem.memory }}KB</h5> -->
         <h5>Time Limit: 1000MS&nbsp;&nbsp;&nbsp;Memory Limit:  32768KB</h5>
         <h2 class="text-primary">Description</h2>
@@ -11,24 +11,24 @@
         </div>
         <h2>Input</h2>
         <div class="cont">
-            {{ problem.input }}
+            {{ problem.input_des }}
         </div>
         <h2>Output</h2>
         <div class="cont">
-            {{ problem.output }}
+            {{ problem.output_des }}
         </div>
         <h2>Sample Input
         <!-- <Tooltip content="Click to copy" placement="top">
             <Icon type="document" v-clipboard:copy="problem.in" v-clipboard:success="onCopy" style="cursor: pointer"></Icon>
         </Tooltip> -->
         </h2>
-        <pre><code>{{ problem.sample_input }}</code></pre>
+        <pre><code>{{ problem.case_data_input }}</code></pre>
         <h2>Sample Output
         <!-- <Tooltip content="Click to copy" placement="top">
             <Icon type="document" v-clipboard:copy="problem.out" v-clipboard:success="onCopy" style="cursor: pointer"></Icon>
         </Tooltip> -->
         </h2>
-        <pre><code>{{ problem.sample_output }}</code></pre>
+        <pre><code>{{ problem.case_data_output }}</code></pre>
         <!-- <div v-if="problem.hint">
             <h2>Hint</h2>
             <div class="cont"></div>
@@ -52,11 +52,12 @@ export default {
       axios
       .get(process.env.BASE_API + '/api/v1/problem/detail',{
           params: {
-              problem_id: self.id
+            //  problem_id: self.id,
+              pid: self.id
           }
       })
       .then(function(response){
-        self.problem = response.data.data
+        self.problem = response.data.problem
       })
     },
     submit () {
