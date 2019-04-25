@@ -65,7 +65,7 @@
                     @on-cancel="cancel">
                     <Tabs v-model="mode">
                         <TabPane label="Login" name="login">
-                            <Form ref="loginForm" :model="form" :rules="loginRules" :label-width="100">
+                            <Form ref="loginForm" :model="form" :rules="loginRules()" :label-width="100">
                                 <FormItem class="loginuid" label="Username" prop="uid">
                                     <Input v-model="form.uid"></Input>
                                 </FormItem>
@@ -75,7 +75,7 @@
                             </Form>
                         </TabPane>
                         <TabPane label="Register" name="register">
-                            <Form ref="registerForm" :model="form" :rules="registerRules" :label-width="100">
+                            <Form ref="registerForm" :model="form" :rules="registerRules()" :label-width="100">
                                 <FormItem label="Username" prop="uid">
                                     <Input v-model="form.uid" ></Input>
                                 </FormItem>
@@ -187,6 +187,16 @@ export default {
             },
             cancel () {
                 this.$Message.info('Clicked cancel');
+            },
+
+            ok() {
+
+            },
+            loginRules() {
+
+            },
+            registerRules() {
+
             },
             profileAction (name) {
                 var self = this
