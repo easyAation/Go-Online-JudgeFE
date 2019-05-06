@@ -202,7 +202,7 @@ export default {
                         params: { uid: localStorage.getItem('uid')}
                     })
                 } else {
-                    window.location.href = "http://localhost:8081"
+                    window.location.href = "http://localhost:8080"
                 }
             }
         }
