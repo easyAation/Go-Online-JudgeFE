@@ -47,7 +47,7 @@ export default {
     getProblemDetail: function() {
       var self = this;
       axios
-      .get(process.env.BASE_API + '/api/v1/problem/detail',{
+      .get(process.env.BASE_API + '/v1/problem/detail',{
           params: {
               pid: self.id
           }
@@ -74,7 +74,7 @@ export default {
         }
         console.log(data)
       axios
-      .post(process.env.BASE_API + '/api/v1/submission/submit',JSON.stringify(data))
+      .post(process.env.BASE_API + '/v1/submission/submit',JSON.stringify(data))
       .then(function(response){
           console.log(response)
       })
