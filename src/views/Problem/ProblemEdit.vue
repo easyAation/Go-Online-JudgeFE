@@ -24,34 +24,28 @@
     <div class="label">Description</div>
     <Row>
       <Col :span="23">
-        <vue-editor id="editor1"
+        <textarea id="editor1"
           useCustomImageHandler
           @imageAdded="handleImageAdded" v-model="problem.description">
-        </vue-editor>
+        </textarea>
       </Col>
     </Row>
     <div class="label">Input</div>
     <Row>
       <Col :span="23">
-       <!--
-        <vue-editor id="editor2" v-model="problem.input"></vue-editor>
-        -->
+        <textarea id="editor2" v-model="problem.input"></textarea>
       </Col>
     </Row>
     <div class="label">Output</div>
     <Row>
       <Col :span="23">
-      <!--
-        <vue-editor id="editor3" v-model="problem.output"></vue-editor>
-        -->
+        <textarea id="editor3" v-model="problem.output"></textarea>
       </Col>
     </Row>
     <div class="label">Hint</div>
     <Row>
       <Col :span="23">
-      <!--
-        <vue-editor id="editor4" v-model="problem.hint"></vue-editor>
-        -->
+        <textarea id="editor4" v-model="problem.hint"></textarea>
       </Col>
     </Row>
     <div class="label">Sample Input</div>
@@ -66,15 +60,22 @@
         <Input type="textarea" :rows="8" v-model="problem.out"></Input>
       </Col>
     </Row>
+    <span> hello problem edit </span>
   </div>
+  
 </template>
 
 <script>
-// import api from '@/api'
-// import { VueEditor } from 'vue2-editor'
+ import { VueEditor } from 'vue2-editor'
 
 export default {
-  props: ['problem'],
+  data() {
+      return {
+          problem: {
+              title: '',
+          }
+      }
+  },
   methods: {
     handleImageAdded (file, Editor, cursorLocation) {
       const formData = new window.FormData()

@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '../components/Home'
-import ProblemEdit from '../components/ProblemEdit'
+import ProblemEdit from '../views/Problem/ProblemEdit'
 import ProblemList from '../views/Problem/ProblemList'
 import FAQ from '../views/FAQ'
 import NewsInfo from '../views/News/NewsInfo'
@@ -45,10 +45,10 @@ const router =  new Router({
       meta: { title: 'Problem List' }
     },
     {
-      path: '/problemss',
-      name: 'problemList',
-      component: ProblemList,
-      meta: { title: 'Problem List' }
+      path: '/problem/edit/:pid',
+      name: 'problemEdit',
+      component: ProblemEdit,
+      meta: { title: 'Problem Edit' }
     },
     {
       path: '/problem/detail/:pid',
