@@ -32,6 +32,7 @@
 
 <script>
 import axios from 'axios'
+import uuid from '../../utils/uuid'
 export default {
     data() {
         return {
@@ -64,7 +65,7 @@ export default {
       var data = {
         //  "pid":self.id.toString(),
       //    "uid":localStorage.getItem("uid"),
-          "id": "fdafsghadfklngfsip",
+          "id": uuid.uuid(8,32),
           "problem_id": self.problem.id,
           //"username":localStorage.getItem("Username").toString(),
           "code": self.solution.code,
