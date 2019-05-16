@@ -4,41 +4,39 @@
             <Header :style="{position: 'fixed', width: '100%', 'z-index': 100}">
             <Menu mode="horizontal" active-name="active">
                 <div class="left">
-                <router-link to="/">
-                <MenuItem name="home">
+                <MenuItem name="home" :to="{name: 'Home'}">
                     <Icon type="ios-home"/>
                         Home
                 </MenuItem>
-                </router-link>
-                <router-link to="/problems">
-                <MenuItem name="problem">
+               
+                <MenuItem name="problem" :to="{name: 'problemList'}">
                     <Icon type="ios-apps" />
                         Problem
                 </MenuItem>
-                </router-link>
                 
                 <MenuItem name="discuss">
                     <Icon type="ios-chatboxes" />
                         Discuss
                 </MenuItem>
-                <router-link to="/status">
-                <MenuItem name="status">
+
+                
+                <MenuItem name="status" :to="{name: 'status'}">
                     <Icon type="md-refresh" />
                         Status
                 </MenuItem>
-                </router-link>
+               
                 <MenuItem name="rank">
                     <Icon type="ios-stats" />
                         Rank
                 </MenuItem>
                 <router-link to="/contests">
-                <MenuItem name="contest">
+                <MenuItem name="contest" :to="{name: 'contestList'}">
                     <Icon type="md-trophy" />
                         Contest
                 </MenuItem>
                 </router-link>
                 <router-link to="/faq">
-                <MenuItem name="faq">
+                <MenuItem name="faq" :to="{name: 'faq'}">
                     <Icon type="ios-help-circle" />
                         FAQ
                 </MenuItem>
@@ -48,7 +46,7 @@
             <div class="right">
                 <Dropdown v-if="logined" @on-click="profileAction">
                     <a href="javascript:void(0)" style="font-size:15px">
-                        {{ this.account.name }}
+                        {{ account.name }}
                         <Icon type="ios-arrow-down" />
                     </a>
                     <DropdownMenu slot="list">
@@ -136,6 +134,7 @@ export default {
                     "githup": '',
                 },
                 login: false,
+                logined: false,
                 account: {
                     token: '',
                     uit:'',
@@ -151,25 +150,64 @@ export default {
             let data = JSON.parse(localStorage.getItem("account"))
             if (data != null) {
                 this.account = data
+                this.logined = true
                 this.$store.dispatch("setAccount", this.account)
                 this.$store.dispatch("setLogined", true)
             }
             console.log(this.account)
         },
         methods: {
+            profileAction (name) {
+                if(name === 'logout') {
+                    localStorage.clear()
+                    this.$store.dispatch("setAccount", null)
+                    this.logined = false
+                    this.$Message.success('See you~')
+                } else if(name === 'profile') {
+                    this.$router.push({
+                        name: 'userInfo',
+                        params: {uid: this.uid}
+                    })
+                } else {
+                    window.location.href = "http://localhost:8080"
+                }
+            },
+            Login: function(data)
+            {
+                if (data.id === "") {
+                    self.$Message.error("帐号不能为空!")
+                    return
+                }
+               if (data.password === "") {
+                    self.$Message.error("密码不能为空!")
+                    return
+               }
+
+              axios
+              .post(process.env.BASE_API + '/v1/signin', JSON.stringify(data))
+              .then(res => {
+                  localStorage.setItem("account", JSON.stringify(res.data))
+                  localStorage.setItem("logined", true)
+                  this.account = res.data
+                  this.logined = true
+                  this.$Message.success("Login Sucessfully!")
+                  console.log("Login Successfully")
+               })
+              .catch(err => {
+                  this.$Message.error("User not exist of password error!")
+                  console.log(err)
+              })
+            },
             submit () {
                 var self = this
                 if(self.mode == 'login') {
                     var data =  {
                             "ID": this.form.uid,
                             "password": this.form.pwd
-                        }   
-                    self.$store.dispatch("Login", {
-                        "ID": this.form.uid,
-                        "password": this.form.pwd,
-                    })
+                        }
+                    self.$options.methods.Login.bind(this)(data)
                     return
-
+                }
                 
                 self.$Message.error("->>>>>>>>>.")
                 if(self.form.pwd !== self.form.rpwd) {
@@ -205,7 +243,6 @@ export default {
                  }).catch(function(err) {
                       self.$Message.error(err.response.data.msg)                       
                   })
-               }
             },
 
             cancel () {
@@ -221,27 +258,20 @@ export default {
             registerRules() {
                     
             },
-            profileAction (name) {
-                if(name === 'logout') {
-                    localStorage.removeItem("account")
-                    //this.$store.dispatch("setAccount", null)
-                    
-                    this.$Message.success('See you~')
-                } else if(name === 'profile') {
-                    console.log(this.$store.state.uid)
-                    this.$router.push({
-                        name: 'userInfo',
-                        params: {uid: "123"}
-                    })
-                } else {
-                    window.location.href = "http://localhost:8080"
+            IsLogin() {
+                let data = localStorage.getItem("logined")
+                if (data != null && data) {
+                    return true
                 }
+                console.log(data)
+                console.log("hahahha")
+                return false
             },
         },
         computed: {
             ...mapState({
-                account: state => state.account,
-                logined: state => state.logined,
+              //  account: state => state.account,
+                //logined: state => state.logined,
             }),
             token() {
                 return this.$store.state.token
@@ -259,16 +289,6 @@ export default {
                }
                return this.$store.state.account
             },
-        },
-        watch: {
-            'this.$store.state.account' : function() {
-                this.account = this.$store.state.account
-                console.log(this.account)
-            },
-            'this.$store.state.logined': function() {
-                console.log(this.account)
-                this.logined = this.$store.state.logined
-            }
         }
 }
 </script>
