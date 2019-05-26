@@ -3,16 +3,16 @@
     <Row class="filter">
       <Col :offset="1" :span="5">
         <Col :span="6"><label>用户姓名</label></Col>
-        <Col :span="15"><Input v-model="uid" placeholder="user name"></Input></Col>
+        <Col :span="15"><Input v-model="searchData.uid" placeholder="用户ID"></Input></Col>
       </Col>
       <Col :span="4">
         <Col :span="6"><label>题目编号</label></Col>
-        <Col :span="15"><Input v-model="pid" placeholder="pid"></Input></Col>
+        <Col :span="15"><Input v-model="searchData.pid" placeholder="pid"></Input></Col>
       </Col>
       <Col :span="6">
-        <Col :span="6"><label>提交ID</label></Col>
+        <Col :span="6"><label>结果</label></Col>
         <Col :span="16">
-          <Select v-model="judge" placeholder="请选择">
+          <Select v-model="searchData.result" placeholder="请选择">
             <Option
               v-for="item in judgeList"
               :key="item"
@@ -25,7 +25,7 @@
       <Col :span="4">
         <Col :span="12"><label>语言</label></Col>
         <Col :span="12">
-          <Select v-model="language" placeholder="请选择">
+          <Select v-model="searchData.language" placeholder="请选择">
             <Option
               v-for="item in languageList"
               :key="item"
@@ -46,14 +46,14 @@
     </Row> -->
     <table>
       <tr>
-        <th>SID</th>
-        <th>PID</th>
-        <th>Username</th>
-        <th>Result</th>
-        <th>Time/ms</th>
-        <th>Memory/kb</th>
-        <th>Language</th>
-        <th>Submit Time</th>
+        <th>提交编号</th>
+        <th>题目编号</th>
+        <th>用户ID</th>
+        <th>结果</th>
+        <th>时间/ms</th>
+        <th>内存/kb</th>
+        <th>语言</th>
+        <th>提交时间</th>
       </tr>
       <tr v-for="(item, index) in list" :key="item.id">
         <td>{{ item.submit_id }}</td>
@@ -64,7 +64,7 @@
         </td>
         <td>
           <router-link :to="{ name: 'userInfo', params: { uid: item.uid } }">
-            <Button type="text" style="color:#2d8cf0;"> lianxm </Button>
+            <Button type="text" style="color:#2d8cf0;"> {{item.uid}} </Button>
           </router-link>
         </td>
         <td v-if="item.result === 'Accepted'" style="color:green">
@@ -104,8 +104,12 @@ export default {
     return {
       uid: "",
       pid: "",
-      language: "",
-      judge: "",
+      searchData: {
+        language: "",
+        result: "",
+        uid: "",
+        pid: ""
+      },
       list: [],
       judgeList: [],
       languageList: ["C", "C++", "Golang"]

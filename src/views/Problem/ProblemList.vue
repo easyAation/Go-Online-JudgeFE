@@ -10,7 +10,7 @@
         </Select>
       </Col>
       <Col :span="4">
-        <Input icon="search" placeholder="Please input..." @keyup.enter.native="search"></Input>
+        <Input icon="search" placeholder="Please input..." @keyup.enter.native="earch"></Input>
       </Col>
       <Col :span="2">
         <Button type="primary" >Search</Button>
@@ -73,7 +73,8 @@ export default {
   computed: {
     ...mapGetters({
       list: "problems/problems",
-      solves: "userInfo/solves"
+      solves: "userInfo/solves",
+      session: "session/sessionInfo"
     })
   },
   created() {

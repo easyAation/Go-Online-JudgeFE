@@ -23,7 +23,6 @@
     <Button type="primary" @click="submit">Submit</Button>
    
     <Button style="margin-left: 8px" @click="reset">Reset</Button>
-    <p v-if="!isLogin">Please Log in First</p>
     <div> 
         <span> {{solution.language}} </span>
    </div>
@@ -31,12 +30,13 @@
 </template>
 
 <script>
-import axios from "axios";
+import http from "../../http.js";
 import uuid from "../../utils/uuid";
+import { mapGetters } from "vuex";
 export default {
   data() {
     return {
-      isLogin: localStorage.getItem("Flag"),
+      isLogin: localStorage.getItem("token"),
       solution: {
         code: "",
         language: ""
@@ -47,8 +47,8 @@ export default {
   methods: {
     getProblemDetail: function() {
       var self = this;
-      axios
-        .get(process.env.BASE_API + "/v1/problem/detail", {
+      http
+        .get("problem/detail", {
           params: {
             pid: self.id
           }
@@ -59,43 +59,38 @@ export default {
     },
     reset() {},
     submit() {
-      var self = this;
+      let pro = this.problem;
       var data = {
         id: uuid.uuid(8, 32),
-        problem_id: self.problem.id,
-        code: self.solution.code,
-        language: self.solution.language,
-        time_limit: self.problem.time_limit,
-        memory_limit: self.problem.memory_limit
+        problem_id: pro.id,
+        code: this.solution.code,
+        language: this.solution.language,
+        time_limit: pro.time_limit,
+        memory_limit: pro.memory_limit
       };
       console.log(data);
 
       let account = JSON.parse(localStorage.getItem("account"));
-      let ok = false;
-      axios
-        .post(
-          process.env.BASE_API + "/v1/submission/submit",
-          JSON.stringify(data),
-          {
-            headers: {
-              Authorization: account.token
-            }
-          }
-        )
-        .then(function(response) {
-          ok = true;
-          console.log(response);
+      http
+        .post("submission/submit", JSON.stringify(data))
+        .then(res => {
+          console.log(res);
         })
         .catch(err => {
-          this.$Message.error("System internal error.");
+          console.log(err.message);
         });
-      this.$router.push({
-        name: "status"
-      });
+      // this.$router.push({
+      //   name: "status"
+      // });
     }
   },
   mounted: function() {
     this.getProblemDetail();
+  },
+  computed: {
+    ...mapGetters({
+      isLogined: "session/isLogined"
+    })
   },
   created() {
     this.id = this.$route.params.pid;
