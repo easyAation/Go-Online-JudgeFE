@@ -25,74 +25,92 @@
 </template>
 
 <script>
-import axios from 'axios'
-import { formate, timePretty, timeContest, timeagoPretty, timePercent }from '../../utils/formate'
+import axios from "axios";
+import {
+  formate,
+  timePretty,
+  timeContest,
+  timeagoPretty,
+  timePercent
+} from "../../utils/formate";
 export default {
-    data() {
-        return {
-            contest: [],
-            display: ''
-        }
-    },
-    methods: {
-        getContestOverView: function() {
-            var self = this
-            axios
-            .get(process.env.BASE_API + '/api/v1/contest/detail',{
-                params : {
-                    contest_id : self.cid
-                }
-            })
-            .then(function(response) {
-                self.contest = response.data.data
-            })
-        },
-        formateTime(time) {
-            return timePretty(time)
-        },
-        timePercentage (currentTime,start_time,end_time) {
-            if (currentTime < start_time) {
-                return 0
-            } else if (currentTime > end_time) {
-                return 100
-            } else {
-                return timePercent(currentTime,start_time,end_time)
-            }
-        },
-        handleClick(name) {
-          if (name === 'contestProblemInfo' || name === 'contestProblemSubmit') {
-            this.$router.push({ name: name, params: { cid: this.cid, pid: 1, id: 1 } })
-          } else {
-            this.$router.push({ name: name, params: { cid: this.cid } })
+  data() {
+    return {
+      contest: [],
+      display: ""
+    };
+  },
+  methods: {
+    getContestOverView: function() {
+      var self = this;
+      axios
+        .get(process.env.BASE_API + "/api/v1/contest/detail", {
+          params: {
+            contest_id: self.cid
           }
-        }
+        })
+        .then(function(response) {
+          self.contest = response.data.data;
+        });
     },
-    mounted: function() {
-        this.getContestOverView()
+    formateTime(time) {
+      return timePretty(time);
     },
-    created() {
-        this.display = this.$route.name
-        this.cid = this.$route.params.cid
+    timePercentage(currentTime, start_time, end_time) {
+      if (currentTime < start_time) {
+        return 0;
+      } else if (currentTime > end_time) {
+        return 100;
+      } else {
+        return timePercent(currentTime, start_time, end_time);
+      }
     },
-    watch: {
-      '$route' (to, from) {
-      this.display = to.name
+    handleClick(name) {
+      if (name === "contestProblemInfo" || name === "contestProblemSubmit") {
+        this.$router.push({
+          name: name,
+          params: { cid: this.cid, pid: 1, id: 1 }
+        });
+      } else {
+        this.$router.push({ name: name, params: { cid: this.cid } });
+      }
+    }
+  },
+  mounted: function() {
+    this.getContestOverView();
+  },
+  created() {
+    this.display = this.$route.name;
+    this.cid = this.$route.params.cid;
+  },
+  watch: {
+    $route(to, from) {
+      this.display = to.name;
     }
   }
-}
+};
 </script>
 
 <style lang="stylus">
-.conin-wrap
-  margin-bottom: 20px
-  .card
-    margin-bottom: 20px
-  .ivu-col
-    text-align: center
-    margin-bottom: 20px
-    font-size: 16px
-  .ivu-progress-bg
-    background-color: #2d8cf0
-  .ivu-progress-text
-    color: #2d8cf0
+.conin-wrap {
+  margin-bottom: 20px;
+
+  .card {
+    margin-bottom: 20px;
+  }
+
+  .ivu-col {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 16px;
+  }
+
+  .ivu-progress-bg {
+    background-color: #2d8cf0;
+  }
+
+  .ivu-progress-text {
+    color: #2d8cf0;
+  }
+}
 </style>

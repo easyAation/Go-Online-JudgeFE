@@ -2,35 +2,35 @@
   <div class="status-wrap">
     <Row class="filter">
       <Col :offset="1" :span="5">
-        <Col :span="6"><label>User</label></Col>
-        <Col :span="15"><Input v-model="uid" placeholder="username"></Input></Col>
+        <Col :span="6"><label>用户姓名</label></Col>
+        <Col :span="15"><Input v-model="uid" placeholder="user name"></Input></Col>
       </Col>
       <Col :span="4">
-        <Col :span="6"><label>Pid</label></Col>
+        <Col :span="6"><label>题目编号</label></Col>
         <Col :span="15"><Input v-model="pid" placeholder="pid"></Input></Col>
       </Col>
       <Col :span="6">
-        <Col :span="6"><label>Judge</label></Col>
+        <Col :span="6"><label>提交ID</label></Col>
         <Col :span="16">
           <Select v-model="judge" placeholder="请选择">
             <Option
               v-for="item in judgeList"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
+              :key="item"
+              :label="item"
+              :value="item">
             </Option>
           </Select>
         </Col>
-      </Col>
+      </Col> 
       <Col :span="4">
-        <Col :span="12"><label>Language</label></Col>
+        <Col :span="12"><label>语言</label></Col>
         <Col :span="12">
           <Select v-model="language" placeholder="请选择">
             <Option
               v-for="item in languageList"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
+              :key="item"
+              :label="item"
+              :value="item">
             </Option>
           </Select>
         </Col>
@@ -39,11 +39,11 @@
         <Button type="primary" @click="search" icon="md-search">Search</Button>
       </Col>
     </Row>
-    <Row class="pagination">
+    <!-- <Row class="pagination">
       <Col :span="16">
-        <Page :total="sum" @on-change="pageChange" :page-size="pageSize" :current.sync="page" show-elevator></Page>
+        <Page :total="sum" :page-size="pageSize" :current.sync="page" show-elevator></Page>
       </Col>
-    </Row>
+    </Row> -->
     <table>
       <tr>
         <th>SID</th>
@@ -76,8 +76,11 @@
         <td v-else-if="item.result === 'Wrong Answer'" style="color:red">
           {{ item.result }}
         </td>
-        <td v-else style="color:blue">
+        <td v-else-if="item.result !== '' " style="color:blue">
           {{ item.result }}
+        </td>
+        <td v-else style="color:purple">
+            Compileing
         </td>
         <td>{{ item.run_time }}</td>
 
@@ -95,61 +98,99 @@
 </template>
 
 <script>
-import axios from 'axios'
+import http from "../http";
 export default {
-    data() {
-        return {
-            list: [],
-            judgeList: [],
-            languageList: [],
-        }
-    },
-    methods: {
-        getSubmissions: function() {
-            var self = this;
-            axios
-            .get(process.env.BASE_API + '/v1/submit/list')
-            .then(function(response) {
-              console.log("response:",  response)
-              self.list = response.data.data.reverse()
-              console.log(self.list)
-            })
-        }
-    },
-    mounted: function() {
-        this.getSubmissions()
+  data() {
+    return {
+      uid: "",
+      pid: "",
+      language: "",
+      judge: "",
+      list: [],
+      judgeList: [],
+      languageList: ["C", "C++", "Golang"]
+    };
   },
-}
+  created() {
+    this.getSubmissions();
+  },
+  methods: {
+    getSubmissions() {
+      http.get("submit/list").then(res => {
+        console.log("response:", res);
+        this.list = res.data.data.reverse();
+      });
+    },
+
+    // search status
+    search() {}
+  },
+  mounted() {
+    this.timer = setInterval(() => {
+      this.getSubmissions();
+    }, 2000);
+  },
+  beforeDestroy() {
+    clearInterval(this.timer);
+  }
+};
 </script>
 
 <style lang="stylus">
-@import '../styles/common'
-.filter
-  margin-bottom: 20px
-  label
-    height: 32px
-    line-height: 32px
-  .ivu-col
-    text-align: center
-  .ivu-select-item
-    text-align: left
-.pagination
-  margin-bottom: 10px
-table
-  th:nth-child(1)
-    width: 8%
-  th:nth-child(2)
-    width: 8%
-  th:nth-child(3)
-    width: 10%
-  th:nth-child(4)
-    width: 15%
-  th:nth-child(5)
-    width: 8%
-  th:nth-child(6)
-    width: 8%
-  th:nth-child(7)
-    width: 8%
-  th:nth-child(8)
-    width: 15%
+@import '../styles/common';
+
+.filter {
+  margin-bottom: 20px;
+
+  label {
+    height: 32px;
+    line-height: 32px;
+  }
+
+  .ivu-col {
+    text-align: center;
+  }
+
+  .ivu-select-item {
+    text-align: left;
+  }
+}
+
+.pagination {
+  margin-bottom: 10px;
+}
+
+table {
+  th:nth-child(1) {
+    width: 8%;
+  }
+
+  th:nth-child(2) {
+    width: 8%;
+  }
+
+  th:nth-child(3) {
+    width: 10%;
+  }
+
+  th:nth-child(4) {
+    width: 15%;
+  }
+
+  th:nth-child(5) {
+    width: 8%;
+  }
+
+  th:nth-child(6) {
+    width: 8%;
+  }
+
+  th:nth-child(7) {
+    width: 8%;
+  }
+
+  th:nth-child(8) {
+    width: 15%;
+  }
+}
 </style>

@@ -44,118 +44,134 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from "axios";
 export default {
-    data() {
-        return {
-            problem: '',
-            proIndex: '',
-            totalProblems: ''
-        }
-    },
-    methods: {
+  data() {
+    return {
+      problem: "",
+      proIndex: "",
+      totalProblems: ""
+    };
+  },
+  methods: {
     getProblemDetail: function() {
       // this.pid = this.$route.params.pid
-      this.cid = this.$route.params.cid
-      this.id = this.$route.params.id
+      this.cid = this.$route.params.cid;
+      this.id = this.$route.params.id;
       var self = this;
 
-    //  self.proIndex =  parseInt(self.$route.params.id)
+      //  self.proIndex =  parseInt(self.$route.params.id)
 
       axios
-      .get(process.env.BASE_API + '/api/v1/contest/problem/detail',{
+        .get(process.env.BASE_API + "/api/v1/contest/problem/detail", {
           params: {
-              problem_index: self.id,
-              contest_id: self.cid
-          }
-      })
-      .then(function(response){
-        self.problem = response.data.data
-        self.proIndex =  parseInt(self.problem.index)
-      })
-    },
-    getContestOverView: function() {
-        var self = this
-        axios
-        .get(process.env.BASE_API + '/api/v1/contest/detail',{
-          params : {
-            contest_id : self.cid
+            problem_index: self.id,
+            contest_id: self.cid
           }
         })
         .then(function(response) {
-            self.overview = response.data.data
-            self.totalProblems = parseInt(self.overview.contest.problems)
+          self.problem = response.data.data;
+          self.proIndex = parseInt(self.problem.index);
+        });
+    },
+    getContestOverView: function() {
+      var self = this;
+      axios
+        .get(process.env.BASE_API + "/api/v1/contest/detail", {
+          params: {
+            contest_id: self.cid
+          }
         })
+        .then(function(response) {
+          self.overview = response.data.data;
+          self.totalProblems = parseInt(self.overview.contest.problems);
+        });
     },
-    submit () {
+    submit() {
       this.$router.push({
-        name: 'contestProblemSubmit',
+        name: "contestProblemSubmit",
         params: this.$router.params
-      })
+      });
     },
-    pageChange (val) {
+    pageChange(val) {
       this.$router.push({
-        name: 'contestProblemInfo',
+        name: "contestProblemInfo",
         params: { id: val, cid: this.cid }
-      })
-    },
+      });
+    }
   },
   mounted: function() {
-      this.getContestOverView()
+    this.getContestOverView();
   },
   created() {
-     this.getProblemDetail()
+    this.getProblemDetail();
   },
   watch: {
-    "$route": "getProblemDetail" 
-  },
-}
+    $route: "getProblemDetail"
+  }
+};
 </script>
 
 <style lang="stylus" scoped>
-h1
-  color: #9799CA
-  margin-top: 10px
-  margin-bottom: 8px
-  text-align: center
-  font-size: 30px
-h5
-  margin-bottom: 10px
-  text-align:center
-  font-size: 12px
-h2
-  border-bottom: 1px solid #e8e8e8
-  padding: 10px 0
-  color: #9799CA
-  font-size:20px
-.cont
-  margin-top: 10px
-  margin-bottom: 20px
-  font-size: 15px
-pre
-  padding: 10px
-  border-radius: 5px
-  background-color: #ECEFF1
-code 
-  font-size: 15px
+h1 {
+  color: #9799CA;
+  margin-top: 10px;
+  margin-bottom: 8px;
+  text-align: center;
+  font-size: 30px;
+}
 
-ul
-  margin-left: 10px
-  li
-    display: inline-block
-    vertical-align: middle
-    min-width: 32px
-    height: 32px
-    line-height: 30px
-    margin-right: 8px
-    text-align: center
-    list-style: none
-    background-color: #fff
-    border: 1px solid #dddee1
-    border-radius: 4px
-    cursor: pointer
-  .active
-    color: #fff
-    background-color: #2d8cf0
-    border-color: #2d8cf0
+h5 {
+  margin-bottom: 10px;
+  text-align: center;
+  font-size: 12px;
+}
+
+h2 {
+  border-bottom: 1px solid #e8e8e8;
+  padding: 10px 0;
+  color: #9799CA;
+  font-size: 20px;
+}
+
+.cont {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  font-size: 15px;
+}
+
+pre {
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #ECEFF1;
+}
+
+code {
+  font-size: 15px;
+}
+
+ul {
+  margin-left: 10px;
+
+  li {
+    display: inline-block;
+    vertical-align: middle;
+    min-width: 32px;
+    height: 32px;
+    line-height: 30px;
+    margin-right: 8px;
+    text-align: center;
+    list-style: none;
+    background-color: #fff;
+    border: 1px solid #dddee1;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .active {
+    color: #fff;
+    background-color: #2d8cf0;
+    border-color: #2d8cf0;
+  }
+}
 </style>

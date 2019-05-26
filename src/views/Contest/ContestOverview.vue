@@ -30,75 +30,97 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from "axios";
 export default {
-    data() {
-      return {
-        overview: [],
-        cid: ''
-      }
-    },
-    methods: {
-      getContestOverView: function() {
-        var self = this
-        axios
-        .get(process.env.BASE_API + '/api/v1/contest/detail',{
-          params : {
-            contest_id : self.cid
+  data() {
+    return {
+      overview: [],
+      cid: ""
+    };
+  },
+  methods: {
+    getContestOverView: function() {
+      var self = this;
+      axios
+        .get(process.env.BASE_API + "/api/v1/contest/detail", {
+          params: {
+            contest_id: self.cid
           }
         })
         .then(function(response) {
-            self.overview = response.data.data
-        })
-      }
-    },
-    mounted: function() {
-      this.getContestOverView()
-    },
-    created() {
-      this.cid = this.$route.params.cid
+          self.overview = response.data.data;
+        });
     }
-}
+  },
+  mounted: function() {
+    this.getContestOverView();
+  },
+  created() {
+    this.cid = this.$route.params.cid;
+  }
+};
 </script>
 
 <style lang="stylus">
-table
-  width: 100%
-  border-collapse: collapse
-  border-spacing: 0
-  th:nth-child(1)
-    padding-left: 10px
-  tr
-    border-bottom: 1px solid #ebeef5
-    height: 40px
-    line-height: 40px
-    font-size: 14px
-    td:nth-child(1)
-      padding-left: 10px
-  th
-    text-align:left
-  .ivu-btn
-    vertical-align: baseline
-    color: #e040fb
-    padding: 0 1px
-    font-size: 14px
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
 
-table
-  th:nth-child(1)
-    width: 5%
-  th:nth-child(2)
-    width: 5%
-  th:nth-child(3)
-    width: 60%
+  th:nth-child(1) {
+    padding-left: 10px;
+  }
 
-h1
-  text-align: center
-  margin-top: 10px
-  margin-bottom: 8px
-  font-size: 30px
-h3
-  text-align: center
-  margin-bottom: 8px
-table
-  margin-bottom: 20px
+  tr {
+    border-bottom: 1px solid #ebeef5;
+    height: 40px;
+    line-height: 40px;
+    font-size: 14px;
+
+    td:nth-child(1) {
+      padding-left: 10px;
+    }
+  }
+
+  th {
+    text-align: left;
+  }
+
+  .ivu-btn {
+    vertical-align: baseline;
+    color: #e040fb;
+    padding: 0 1px;
+    font-size: 14px;
+  }
+}
+
+table {
+  th:nth-child(1) {
+    width: 5%;
+  }
+
+  th:nth-child(2) {
+    width: 5%;
+  }
+
+  th:nth-child(3) {
+    width: 60%;
+  }
+}
+
+h1 {
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 8px;
+  font-size: 30px;
+}
+
+h3 {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+table {
+  margin-bottom: 20px;
+}
 </style>

@@ -10,13 +10,13 @@ import ProblemSubmit from '../views/Problem/ProblemSubmit'
 import ProblemInfo from '../views/Problem/ProblemInfo'
 import UserInfo from '../views/UserInfo'
 import Status from '../views/Status'
-import ContestList from '../views/ContestList'
+import ContestList from '../views/Contest/ContestList'
 import Contest from '../views/Contest/Contest'
 import ContestOverview from '../views/Contest/ContestOverview'
 import ContestProblemSubmit from '../views/Contest/ContestSubmit'
 import ContestProblemInfo from '../views/Contest/ContestProblemInfo'
 import ContestStatus from '../views/Contest/ContestStatus'
-
+import RankList from '../views/RankList'
 Vue.use(Router)
 
 const router =  new Router({
@@ -73,6 +73,12 @@ const router =  new Router({
       name: 'status',
       component: Status,
       meta: { title: 'Status' } 
+    },
+    {
+      path: '/rankList',
+      name: 'rankList',
+      component: RankList,
+      meta: {title: 'Rank'}
     },
     {
       path: '/faq',

@@ -1,8 +1,8 @@
 <template lang="html">
   <div class="prolist-wrap">
-    <Row style="margin-bottom: 20px">
+    <!-- <Row style="margin-bottom: 20px">
       <Col span="16">
-        <Page :total="sum" @on-change="pageChange" :page-size="pageSize" :current.sync="page" show-elevator></Page>
+        <Page :total="sum" :page-size="pageSize" :current.sync="page" show-elevator></Page>
       </Col>
       <Col :span="2">
         <Select>
@@ -13,24 +13,23 @@
         <Input icon="search" placeholder="Please input..." @keyup.enter.native="search"></Input>
       </Col>
       <Col :span="2">
-        <Button type="primary" @click="search">Search</Button>
+        <Button type="primary" >Search</Button>
       </Col>
-    </Row>
+    </Row> -->
     <table>
       <tr>
         <th>#</th>
-        <th>PID</th>
-        <th>Title</th>
-        <th>Ratio</th>
-        <th>Tags</th>
+        <th>题目编号</th>
+        <th>标题</th>
+        <th>详情</th>
+        <th>难度</th>
+        <th>标签</th>
       </tr>
 
       <template v-for="(item, index) in list">
         <tr>
           <td>
-            <!-- <Icon v-if="isSolved(item.id,uid) !== false" size="25" type="ios-checkmark"></Icon> -->
-            <!-- <Icon v-else></Icon> -->
-            <Icon></Icon>
+             <Icon v-if="isSolve(item.id)" size="25" type="ios-checkmark" style="color:red"> </Icon> 
           </td>
           <td>{{ item.id }}</td>
           <td>
@@ -38,12 +37,18 @@
               <Button type="text" style="color:#2d8cf0;">{{ item.name }}</Button>
             </router-link>
           <td>
-            (<router-link :to="{ name: 'status', query: { pid: item.id} }">
+            <router-link :to="{ name: 'status', query: { pid: item.id} }">
               <Button type="text" style="color:#2d8cf0">{{ item.solve }}</Button>
             </router-link>
+            /
             <router-link :to="{ name: 'status', query: { pid: item.id } }">
               <Button type="text" style="color:#2d8cf0">{{ item.submission }}</Button>
-            </router-link>)
+            </router-link>
+          </td>
+          <td>
+              <router-link :to="{ name: 'problemList', query: { type: 'difficulty', content: item.difficulty } }">
+              <Button type='text' style="color:#2d8cf0"> {{ item.difficulty}} </Button>
+              </router-link>
           </td>
           <td>
             <template v-for="(item2, index2) in item.tags">
@@ -59,72 +64,101 @@
 </template>
 
 <script>
-import axios from 'axios'
-import { solved, unsolve} from '../../utils/submision'
+import http from "../../http.js";
+import { mapState, mapGetters, mapMutations } from "vuex";
 export default {
   data() {
-    return {
-      list: [],
-      options: [],
-      uid: localStorage.getItem('uid')
+    return {};
+  },
+  computed: {
+    ...mapGetters({
+      list: "problems/problems",
+      solves: "userInfo/solves"
+    })
+  },
+  created() {
+    this.$store.dispatch("problems/getProblemList", {}).catch(err => {
+      this.$Message.error("system error!");
+    });
+
+    if (localStorage.getItem("token") != null) {
+      this.$store.dispatch("userInfo/getUserSolves");
     }
   },
   methods: {
-    getProblemList: function() {
-      var self = this;
-      axios
-      .get(process.env.BASE_API + '/v1/problem/list')
-      .then(function(response){
-        self.list = response.data.list
-      })
-    },
-    isSolved(pid,uid) {
-      return solved(pid,uid)
+    isSolve(pid) {
+      for (let i = 0; i < this.solves.length; i++) {
+        if (this.solves[i] == pid) return true;
+      }
+      return false;
     }
   },
-  mounted: function() {
-     this.getProblemList()
-  },
-}
+
+  mounted: function() {}
+};
 </script>
 
 
 <style lang="stylus" scoped>
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
 
-table
-  width: 100%
-  border-collapse: collapse
-  border-spacing: 0
-  th:nth-child(1)
-    padding-left: 10px
-  tr
-    border-bottom: 1px solid #ebeef5
-    height: 40px
-    line-height: 40px
-    font-size: 14px
-    td:nth-child(1)
-      padding-left: 10px
-  th
-    text-align:left
-  .ivu-btn
-    vertical-align: baseline
-    color: #e040fb
-    padding: 0 1px
-    font-size: 14px
+  th:nth-child(1) {
+    padding-left: 10px;
+  }
 
-table
-  th:nth-child(1)
-    width: 5%
-  th:nth-child(2)
-    width: 10%
-  th:nth-child(3)
-    width: 20%
-  th:nth-child(4)
-    width: 20%
-  th:nth-child(5)
-    width: 20%
-  th:nth-child(6)
-    width: 10%
-  th:nth-child(7)
-    width: 10%
+  tr {
+    border-bottom: 1px solid #ebeef5;
+    height: 40px;
+    line-height: 40px;
+    font-size: 14px;
+
+    td:nth-child(1) {
+      padding-left: 10px;
+    }
+  }
+
+  th {
+    text-align: left;
+  }
+
+  .ivu-btn {
+    vertical-align: baseline;
+    color: #e040fb;
+    padding: 0 1px;
+    font-size: 14px;
+  }
+}
+
+table {
+  th:nth-child(1) {
+    width: 5%;
+  }
+
+  th:nth-child(2) {
+    width: 10%;
+  }
+
+  th:nth-child(3) {
+    width: 20%;
+  }
+
+  th:nth-child(4) {
+    width: 20%;
+  }
+
+  th:nth-child(5) {
+    width: 20%;
+  }
+
+  th:nth-child(6) {
+    width: 10%;
+  }
+
+  th:nth-child(7) {
+    width: 10%;
+  }
+}
 </style>

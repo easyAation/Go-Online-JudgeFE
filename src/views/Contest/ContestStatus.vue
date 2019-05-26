@@ -94,62 +94,89 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from "axios";
 export default {
-    data() {
-        return {
-            list: [],
-            judgeList: [],
-            languageList: [],
-        }
-    },
-    methods: {
-        getSubmissions: function() {
-            var self = this;
-            axios
-            .get(process.env.BASE_API + '/api/v1/contest/submission')
-            .then(function(response) {
-              self.list = response.data.data.reverse()
-            })
-        }
-    },
-    mounted: function() {
-        this.getSubmissions()
-    },
-    created() {
-      this.cid = this.$route.params.cid
+  data() {
+    return {
+      list: [],
+      judgeList: [],
+      languageList: []
+    };
+  },
+  methods: {
+    getSubmissions: function() {
+      var self = this;
+      axios
+        .get(process.env.BASE_API + "/api/v1/contest/submission")
+        .then(function(response) {
+          self.list = response.data.data.reverse();
+        });
     }
-}
+  },
+  mounted: function() {
+    this.getSubmissions();
+  },
+  created() {
+    this.cid = this.$route.params.cid;
+  }
+};
 </script>
 
 <style lang="stylus">
-@import '../../styles/common'
-.filter
-  margin-bottom: 20px
-  label
-    height: 32px
-    line-height: 32px
-  .ivu-col
-    text-align: center
-  .ivu-select-item
-    text-align: left
-.pagination
-  margin-bottom: 10px
-table
-  th:nth-child(1)
-    width: 8%
-  th:nth-child(2)
-    width: 8%
-  th:nth-child(3)
-    width: 10%
-  th:nth-child(4)
-    width: 15%
-  th:nth-child(5)
-    width: 8%
-  th:nth-child(6)
-    width: 8%
-  th:nth-child(7)
-    width: 8%
-  th:nth-child(8)
-    width: 15%
+@import '../../styles/common';
+
+.filter {
+  margin-bottom: 20px;
+
+  label {
+    height: 32px;
+    line-height: 32px;
+  }
+
+  .ivu-col {
+    text-align: center;
+  }
+
+  .ivu-select-item {
+    text-align: left;
+  }
+}
+
+.pagination {
+  margin-bottom: 10px;
+}
+
+table {
+  th:nth-child(1) {
+    width: 8%;
+  }
+
+  th:nth-child(2) {
+    width: 8%;
+  }
+
+  th:nth-child(3) {
+    width: 10%;
+  }
+
+  th:nth-child(4) {
+    width: 15%;
+  }
+
+  th:nth-child(5) {
+    width: 8%;
+  }
+
+  th:nth-child(6) {
+    width: 8%;
+  }
+
+  th:nth-child(7) {
+    width: 8%;
+  }
+
+  th:nth-child(8) {
+    width: 15%;
+  }
+}
 </style>
