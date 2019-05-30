@@ -22,6 +22,9 @@ const problems = {
   getters: {
     problems: state => {
       return state.problems
+    },
+    problemCount: state => {
+      return state.problems.length
     }
   },
 
@@ -35,13 +38,7 @@ const problems = {
       let pro = state.problems.find(pro => pro.id == id)
       if (pro != undefined)
         return pro
-      http.get("problem/detail", {
-        params: {
-          "pid": id,
-        }
-      }).then(res => {
-        pro = res.data
-      })
+
     }
   }
 }

@@ -1,21 +1,21 @@
 <template lang="html">
   <div class="prolist-wrap">
-    <!-- <Row style="margin-bottom: 20px">
+    <Row style="margin-bottom: 20px">
       <Col span="16">
-        <Page :total="sum" :page-size="pageSize" :current.sync="page" show-elevator></Page>
+        <Page :total="problemCount" :page-size="pageSize" @on-change="changeIndex" :current.sync="currentIndex" show-elevator show-total></Page>
       </Col>
-      <Col :span="2">
+      <!-- <Col :span="2">
         <Select>
           <Option v-for="item in options" :value="item.value" :key="item.value">{{ item.label }}</Option>
         </Select>
-      </Col>
+      </Col> -->
       <Col :span="4">
-        <Input icon="search" placeholder="Please input..." @keyup.enter.native="earch"></Input>
+        <Input icon="search" placeholder="Please input..." @keyup.enter.native="search"></Input>
       </Col>
       <Col :span="2">
         <Button type="primary" >Search</Button>
       </Col>
-    </Row> -->
+    </Row>
     <table>
       <tr>
         <th>#</th>
@@ -25,8 +25,7 @@
         <th>难度</th>
         <th>标签</th>
       </tr>
-
-      <template v-for="(item, index) in list">
+      <template v-for="(item, index) in showList">
         <tr>
           <td>
              <Icon v-if="isSolve(item.id)" size="25" type="ios-checkmark" style="color:red"> </Icon> 
@@ -68,19 +67,28 @@ import http from "../../http.js";
 import { mapState, mapGetters, mapMutations } from "vuex";
 export default {
   data() {
-    return {};
+    return {
+      showList: [],
+      pageSize: 2,
+      currentIndex: 1
+    };
   },
   computed: {
     ...mapGetters({
       list: "problems/problems",
       solves: "userInfo/solves",
-      session: "session/sessionInfo"
+      problemCount: "problems/problemCount"
     })
   },
   created() {
-    this.$store.dispatch("problems/getProblemList", {}).catch(err => {
-      this.$Message.error("system error!");
-    });
+    this.$store
+      .dispatch("problems/getProblemList", {})
+      .then(res => {
+        this.changeIndex(1);
+      })
+      .catch(err => {
+        this.$Message.error("system error!");
+      });
 
     if (localStorage.getItem("token") != null) {
       this.$store.dispatch("userInfo/getUserSolves");
@@ -92,6 +100,11 @@ export default {
         if (this.solves[i] == pid) return true;
       }
       return false;
+    },
+    changeIndex(index) {
+      let start = (index - 1) * this.pageSize;
+      let end = start + this.pageSize;
+      this.showList = this.list.slice(start, end);
     }
   },
 

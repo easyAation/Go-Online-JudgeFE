@@ -23,9 +23,39 @@
     <Button type="primary" @click="submit">Submit</Button>
    
     <Button style="margin-left: 8px" @click="reset">Reset</Button>
-    <div> 
-        <span> {{solution.language}} </span>
-   </div>
+
+  <Modal
+        v-model="toDisplayModal"
+        @on-ok="ok"
+        :title="modelTitle"
+        @on-cancel="cancel">
+        <div display:inline>
+          <Spin >
+            <div>
+             <p v-if="res.result === 'Accepted'" style="color:green">
+                    {{res.result}}
+             </p>
+             <p v-else-if="res.result === 'Compilation Error'" style="color:purple">
+                    {{res.result}}
+             </p>
+             <p v-else-if="res.result === 'Wrong Answer'" style="color:red">
+                   {{ res.result }}
+             </p>
+             <p v-else-if="res.result === 'Time Limit'" style="color:red">
+                   {{ res.result }}
+             </p>
+             <p v-else-if="res.result !== '' " style="color:metting">
+                  {{ res.result }}
+             </p>
+             </div>
+          </Spin>
+             
+             <!-- <p> {{res.time}}ms </p>
+             <p> {{res.memoty}}b</P> -->
+        </div>
+        <!-- <pre> {{solution.code}} </pre> -->
+    </Modal>
+
   </div>
 </template>
 
@@ -37,14 +67,25 @@ export default {
   data() {
     return {
       isLogin: localStorage.getItem("token"),
+      toDisplayModal: false,
       solution: {
         code: "",
         language: ""
+      },
+      modelTitle: "",
+      res: {
+        result: "panding"
       },
       problem: ""
     };
   },
   methods: {
+    ok() {
+      this.$Message.info("Clicked ok");
+    },
+    cancel() {
+      this.$Message.info("Clicked cancel");
+    },
     getProblemDetail: function() {
       var self = this;
       http
@@ -53,12 +94,13 @@ export default {
             pid: self.id
           }
         })
-        .then(function(response) {
-          self.problem = response.data.problem;
+        .then(function(res) {
+          self.problem = res.data.problem;
         });
     },
     reset() {},
     submit() {
+      this.res.result = "pending";
       let pro = this.problem;
       var data = {
         id: uuid.uuid(8, 32),
@@ -69,19 +111,19 @@ export default {
         memory_limit: pro.memory_limit
       };
       console.log(data);
-
+      this.modelTitle = "#" + data.id + "uid for " + pro.id;
       let account = JSON.parse(localStorage.getItem("account"));
       http
         .post("submission/submit", JSON.stringify(data))
         .then(res => {
-          console.log(res);
+          this.res = res.data.data;
+          console.log(res.data);
         })
         .catch(err => {
+          this.res.result = "system error!";
           console.log(err.message);
         });
-      // this.$router.push({
-      //   name: "status"
-      // });
+      this.toDisplayModal = true;
     }
   },
   mounted: function() {
@@ -107,7 +149,7 @@ h1 {
   font-size: 30px;
 }
 
-.ivu-form-item-label {
+.ivu-form-res-label {
   font-size: 16px;
 }
 </style>

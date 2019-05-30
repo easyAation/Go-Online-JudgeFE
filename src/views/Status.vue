@@ -39,11 +39,12 @@
         <Button type="primary" @click="search" icon="md-search">Search</Button>
       </Col>
     </Row>
-    <!-- <Row class="pagination">
+
+    <Row class="pagination">
       <Col :span="16">
-        <Page :total="sum" :page-size="pageSize" :current.sync="page" show-elevator></Page>
+        <Page :total="dataCount" :page-size="pageSize"  @on-change="changePage" :current.sync="currentIndex" show-elevator show-total></Page>
       </Col>
-    </Row> -->
+    </Row>
     <table>
       <tr>
         <th>提交编号</th>
@@ -55,7 +56,7 @@
         <th>语言</th>
         <th>提交时间</th>
       </tr>
-      <tr v-for="(item, index) in list" :key="item.id">
+      <tr v-for="(item, index) in showList" :key="item.id">
         <td>{{ item.submit_id }}</td>
         <td>
           <router-link :to="{ name: 'problemInfo', params: { pid: item.pid } }">
@@ -104,6 +105,9 @@ export default {
     return {
       uid: "",
       pid: "",
+      currentIndex: 1,
+      pageSize: 20,
+      dataCount: 0,
       searchData: {
         language: "",
         result: "",
@@ -111,7 +115,9 @@ export default {
         pid: ""
       },
       list: [],
-      judgeList: [],
+      showList: [],
+      totalList: [],
+      judgeList: ["Accept", "Wrong Answer"],
       languageList: ["C", "C++", "Golang"]
     };
   },
@@ -122,17 +128,27 @@ export default {
     getSubmissions() {
       http.get("submit/list").then(res => {
         console.log("response:", res);
-        this.list = res.data.data.reverse();
+        this.totalList = res.data.data.reverse();
+        this.dataCount = res.data.total;
+
+        let start = (this.currentIndex - 1) * this.pageSize;
+        let end = start + this.pageSize;
+        this.showList = this.totalList.slice(start, end);
       });
     },
 
     // search status
-    search() {}
+    search() {},
+    changePage(index) {
+      let start = (index - 1) * this.pageSize;
+      let end = start + this.pageSize;
+      this.showList = this.totalList.slice(start, end);
+    }
   },
   mounted() {
     this.timer = setInterval(() => {
       this.getSubmissions();
-    }, 2000);
+    }, 5000);
   },
   beforeDestroy() {
     clearInterval(this.timer);
