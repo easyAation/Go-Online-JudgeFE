@@ -103,7 +103,7 @@ export default {
       this.res.result = "pending";
       let pro = this.problem;
       var data = {
-        id: uuid.uuid(8, 32),
+        id: uuid.uuid(8, 32).toLowerCase(),
         problem_id: pro.id,
         code: this.solution.code,
         language: this.solution.language,

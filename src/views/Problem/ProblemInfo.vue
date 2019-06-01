@@ -5,15 +5,15 @@
         <slot name="title"><h1>{{ problem.id }}:  {{ problem.name }}</h1></slot>
         <h5>Time Limit: {{problem.time_limit}}MS&nbsp;&nbsp;&nbsp;Memory Limit:  {{problem.memory_limit}}KB</h5>
         <h2 class="text-primary">Description</h2>
-        <div class="cont">
+        <div class="cont" v-html="problem.description">
             {{ problem.description }}
         </div>
         <h2>Input</h2>
-        <div class="cont">
+        <div class="cont" v-html="problem.input_des">
             {{ problem.input_des }}
         </div>
         <h2>Output</h2>
-        <div class="cont">
+        <div class="cont" v-html="problem.output_des">
             {{ problem.output_des }}
         </div>
         <h2>Sample Input
@@ -28,7 +28,7 @@
         </Tooltip> -->
         </h2>
         <pre><code>{{ problem.case_data_output }}</code></pre>
-        <div v-if="problem.hint">
+        <div v-if="problem.hint" v-html="problem.hint">
             <h2>Hint</h2>
             <div class="cont"></div>
         </div>

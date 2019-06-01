@@ -6,6 +6,7 @@ const userInfo = {
   state: {
     info: null,
     solveProblems: [],
+    adminList: [],
   },
 
   mutations: {
@@ -25,7 +26,8 @@ const userInfo = {
   getters: {
     solves: state => {
       return state.solveProblems
-    }
+    },
+    adminList: state => state.adminList
   },
 
   actions: {

@@ -57,7 +57,14 @@
         <th>提交时间</th>
       </tr>
       <tr v-for="(item, index) in showList" :key="item.id">
-        <td>{{ item.submit_id }}</td>
+        <td>
+             <!-- <router-link :to="{name: 'Sulotion', params:{item.submit_id} }"> -->
+                
+             <!-- </router-link> -->
+              <router-link :to="{ name: 'solution', params: { sid: item.submit_id } }">
+                    {{ item.submit_id }}
+          </router-link>
+        </td>
         <td>
           <router-link :to="{ name: 'problemInfo', params: { pid: item.pid } }">
             {{ item.pid }}
