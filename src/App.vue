@@ -1,6 +1,8 @@
 <template>
   <div id="app">
-    <oj-layout></oj-layout>
+    <oj-layout>
+      <router-view></router-view>
+    </oj-layout>
   </div>
 </template>
 

@@ -73,7 +73,7 @@ export default {
     getProblemList: function() {
       var self = this;
       axios
-      .get(process.env.BASE_API + '/api/v1/problem/list')
+      .get(process.env.BASE_API + '/v1/problem/list')
       .then(function(response){
         self.list = response.data.list
       })

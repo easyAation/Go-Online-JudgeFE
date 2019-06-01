@@ -50,7 +50,7 @@ export default {
     getProblemDetail: function() {
       var self = this;
       axios
-      .get(process.env.BASE_API + '/api/v1/problem/detail',{
+      .get(process.env.BASE_API + '/v1/problem/detail',{
           params: {
             //  problem_id: self.id,
               pid: self.id

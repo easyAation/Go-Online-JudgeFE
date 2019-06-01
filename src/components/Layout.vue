@@ -4,40 +4,39 @@
             <Header :style="{position: 'fixed', width: '100%', 'z-index': 100}">
             <Menu mode="horizontal" active-name="active">
                 <div class="left">
-                <router-link to="/">
-                <MenuItem name="home">
+                <MenuItem name="home" :to="{name: 'Home'}">
                     <Icon type="ios-home"/>
                         Home
                 </MenuItem>
-                </router-link>
-                <router-link to="/problems">
-                <MenuItem name="problem">
+               
+                <MenuItem name="problem" :to="{name: 'problemList'}">
                     <Icon type="ios-apps" />
                         Problem
                 </MenuItem>
-                </router-link>
+                
                 <MenuItem name="discuss">
                     <Icon type="ios-chatboxes" />
                         Discuss
                 </MenuItem>
-                <router-link to="/status">
-                <MenuItem name="status">
+
+                
+                <MenuItem name="status" :to="{name: 'status'}">
                     <Icon type="md-refresh" />
                         Status
                 </MenuItem>
-                </router-link>
+               
                 <MenuItem name="rank">
                     <Icon type="ios-stats" />
                         Rank
                 </MenuItem>
                 <router-link to="/contests">
-                <MenuItem name="contest">
+                <MenuItem name="contest" :to="{name: 'contestList'}">
                     <Icon type="md-trophy" />
                         Contest
                 </MenuItem>
                 </router-link>
                 <router-link to="/faq">
-                <MenuItem name="faq">
+                <MenuItem name="faq" :to="{name: 'faq'}">
                     <Icon type="ios-help-circle" />
                         FAQ
                 </MenuItem>
@@ -45,10 +44,9 @@
                 </div>
             </Menu>
             <div class="right">
-
-                <Dropdown v-if="isLogin" @on-click="profileAction">
+                <Dropdown v-if="logined" @on-click="profileAction">
                     <a href="javascript:void(0)" style="font-size:15px">
-                        {{ profile.username }}
+                        {{ account.name }}
                         <Icon type="ios-arrow-down" />
                     </a>
                     <DropdownMenu slot="list">
@@ -65,8 +63,8 @@
                     @on-cancel="cancel">
                     <Tabs v-model="mode">
                         <TabPane label="Login" name="login">
-                            <Form ref="loginForm" :model="form" :rules="loginRules" :label-width="100">
-                                <FormItem class="loginuid" label="Username" prop="uid">
+                            <Form ref="loginForm" :model="form" :rules="loginRules()" :label-width="100">
+                                <FormItem class="loginuid" label="UserID" prop="uid">
                                     <Input v-model="form.uid"></Input>
                                 </FormItem>
                                 <FormItem class="loginpwd" label="Password" prop="pwd">
@@ -75,18 +73,24 @@
                             </Form>
                         </TabPane>
                         <TabPane label="Register" name="register">
-                            <Form ref="registerForm" :model="form" :rules="registerRules" :label-width="100">
-                                <FormItem label="Username" prop="uid">
+                            <Form ref="registerForm" :model="form" :rules="registerRules()" :label-width="100">
+                                <FormItem label="*帐号" prop="uid">
                                     <Input v-model="form.uid" ></Input>
                                 </FormItem>
-                                <FormItem label="Nickname" prop="nick">
+                                <FormItem label="*昵称" prop="name">
                                     <Input v-model="form.name"></Input>
                                 </FormItem>
-                                <FormItem label="Password" prop="pwd">
-                                    <Input type="password" v-model="form.pwd"></Input>
+                                <FormItem label="*密码" prop="pwd">
+                                    <Input type="password" v-model="form.pwd" value="必填"></Input>
                                 </FormItem>
-                                <FormItem label="CheckPwd" prop="checkPwd" class="checkpwd">
+                                <FormItem label="*重复密码" prop="rpwd" class="rpwd">
                                     <Input type="password" v-model="form.rpwd"></Input>
+                                </FormItem>
+                                <FormItem label="博客" prop="blog">
+                                    <Input v-model="form.blog"> </Input>
+                                </FormItem>
+                                <FormItem label="githup" prop="githup">
+                                    <Input v-model="form.githup"> </Input>
                                 </FormItem>
                             </Form>
                         </TabPane>
@@ -96,6 +100,7 @@
                             <Col :span="20">
                             <Button type="primary" size="large" long @click="submit">Submit</Button>
                             </Col>
+                            
                         </Row>
                     </div>
                 </Modal>
@@ -105,7 +110,7 @@
                 <router-view></router-view>
             </Content>
             <Footer class="layout-footer-center">
-                <p>Server Time: {{ currentTime | timePretty }}</p>
+               <span> {{this.account.name}} </span>
                 <strong>Go-Online-Judge</strong> by <a href="https://github.com/SpiffyEight77/Go-Online-Judge" target="_blank">SpiffyEight77 <Icon type="logo-octocat" /></Icon>.</a>
                 The source code is licensed <a href="http://opensource.org/licenses/mit-license.php" target="_blank">MIT</a>.
             </Footer>
@@ -115,6 +120,7 @@
 
 <script>
 import axios from 'axios'
+import {mapState, mapGetters, mapActions} from 'vuex'
 export default {
      data () {
             return {
@@ -122,11 +128,18 @@ export default {
                 form: {
                     "uid":'',
                     "pwd":'',
-                    "rpwd":'',
-                    "name":''
+                    "rpwd": '',
+                    "name":'',
+                    "blog": '',
+                    "githup": '',
                 },
-                isLogin: localStorage.getItem("Flag"),
                 login: false,
+                logined: false,
+                account: {
+                    token: '',
+                    uit:'',
+                    name: '',
+                },
                 profile: {
                     "name": '',
                     "uid": '',
@@ -134,77 +147,148 @@ export default {
             }
         },
         created() {
-            this.profile.username = localStorage.getItem("Username")
+            let data = JSON.parse(localStorage.getItem("account"))
+            if (data != null) {
+                this.account = data
+                this.logined = true
+                this.$store.dispatch("setAccount", this.account)
+                this.$store.dispatch("setLogined", true)
+            }
+            console.log(this.account)
         },
         methods: {
-            submit () {
-                var self = this
-                if(this.mode == 'login') {
-
-                    var data =  {
-                            "username": this.form.uid,
-                            "password": this.form.pwd
-                        }   
-
-                    axios
-                    .post(process.env.BASE_API + '/api/v1/user/login',JSON.stringify(data)
-                    ).then(function(response){
-                        localStorage.setItem("Flag",true)
-                        self.profile = response.data.data
-                        localStorage.setItem("Username",self.profile.username)   
-                        localStorage.setItem("uid",self.profile.uid)                     
-                        self.isLogin = true
-                        self.login = false
-                        self.$Message.success('Login successfully');
-                    }).catch(function(err){
-                        self.$Message.error('User not exist or password error');
-                    })
-                } else {
-
-                    var self = this
-                    
-                    if(self.form.pwd !== self.form.rpwd) {
-                        self.$Message.error('repeat password error');
-                    } else {
-
-                    var data =  {
-                        "username": self.form.uid,
-                        "nickname": self.form.name,
-                        "password": self.form.pwd
-                    }   
-
-                    axios
-                    .post(process.env.BASE_API + '/api/v1/user/register', JSON.stringify(data)
-                    ).then(function(response){
-                        self.$Message.success('Clicked submit register successfully')
-                        self.login = false
-                    }).catch(function(err) {
-                        self.$Message.error('register error');
-                    })
-
-                    }
-                }
-            },
-            cancel () {
-                this.$Message.info('Clicked cancel');
-            },
             profileAction (name) {
-                var self = this
                 if(name === 'logout') {
-                    this.$Message.success('See you~');
-                    localStorage.removeItem("Flag")
-                    localStorage.removeItem("Username")
-                    localStorage.removeItem("uid")
-                    this.isLogin = false
+                    localStorage.clear()
+                    this.$store.dispatch("setAccount", null)
+                    this.logined = false
+                    this.$Message.success('See you~')
                 } else if(name === 'profile') {
                     this.$router.push({
                         name: 'userInfo',
-                        params: { uid: localStorage.getItem('uid')}
+                        params: {uid: this.uid}
                     })
                 } else {
-                    window.location.href = "http://localhost:8081"
+                    window.location.href = "http://localhost:8080"
                 }
-            }
+            },
+            Login: function(data)
+            {
+                if (data.id === "") {
+                    self.$Message.error("帐号不能为空!")
+                    return
+                }
+               if (data.password === "") {
+                    self.$Message.error("密码不能为空!")
+                    return
+               }
+
+              axios
+              .post(process.env.BASE_API + '/v1/signin', JSON.stringify(data))
+              .then(res => {
+                  localStorage.setItem("account", JSON.stringify(res.data))
+                  localStorage.setItem("logined", true)
+                  this.account = res.data
+                  this.logined = true
+                  this.$Message.success("Login Sucessfully!")
+                  console.log("Login Successfully")
+               })
+              .catch(err => {
+                  this.$Message.error("User not exist of password error!")
+                  console.log(err)
+              })
+            },
+            submit () {
+                var self = this
+                if(self.mode == 'login') {
+                    var data =  {
+                            "ID": this.form.uid,
+                            "password": this.form.pwd
+                        }
+                    self.$options.methods.Login.bind(this)(data)
+                    return
+                }
+                
+                self.$Message.error("->>>>>>>>>.")
+                if(self.form.pwd !== self.form.rpwd) {
+                     self.$Message.error('repeat password error');
+                     return
+                } 
+                  var data =  {
+                    "id": self.form.uid,
+                    "name": self.form.name,
+                    "password": self.form.pwd,
+                    "blog_addr": self.form.blog,
+                    "githup_addr": self.form.githup,
+                  }
+
+                 if (data.id === "") {
+                     self.$Message.error("帐号不能为空!")
+                    return
+                 }
+                 if (data.nickname === "") {
+                    self.$Message.error("昵称不能为空!")
+                     return
+                 }
+                 if (data.password === "") {
+                    self.$Message.error("密码不能为空!")
+                     return
+                }
+
+                 axios
+                 .post(process.env.BASE_API + '/v1/account/register', JSON.stringify(data)
+                 ).then(function(response){
+                     self.$Message.success('Clicked submit register')
+                     self.login = false
+                 }).catch(function(err) {
+                      self.$Message.error(err.response.data.msg)                       
+                  })
+            },
+
+            cancel () {
+                this.$Message.info('Clicked cancel');
+            },
+
+            ok() {
+
+            },
+            loginRules() {
+
+            },
+            registerRules() {
+                    
+            },
+            IsLogin() {
+                let data = localStorage.getItem("logined")
+                if (data != null && data) {
+                    return true
+                }
+                console.log(data)
+                console.log("hahahha")
+                return false
+            },
+        },
+        computed: {
+            ...mapState({
+              //  account: state => state.account,
+                //logined: state => state.logined,
+            }),
+            token() {
+                return this.$store.state.token
+            },
+            name() {
+                return this.$store.state.account.name
+            },
+            uid() {
+                return this.$store.state.uid
+            },
+            Account() {
+                if (state.account.uid == '') {
+                   let ac = JSON.parse(localStorage.getItem("account"))
+                   this.$store.dispatch("setAccount", ac)
+               }
+               return this.$store.state.account
+            },
         }
 }
 </script>

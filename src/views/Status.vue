@@ -49,15 +49,14 @@
         <th>SID</th>
         <th>PID</th>
         <th>Username</th>
-        <th>Judge</th>
+        <th>Result</th>
         <th>Time/ms</th>
         <th>Memory/kb</th>
         <th>Language</th>
         <th>Submit Time</th>
       </tr>
-      
       <tr v-for="(item, index) in list" :key="item.id">
-        <td>{{ item.id }}</td>
+        <td>{{ item.submit_id }}</td>
         <td>
           <router-link :to="{ name: 'problemInfo', params: { pid: item.pid } }">
             {{ item.pid }}
@@ -65,24 +64,26 @@
         </td>
         <td>
           <router-link :to="{ name: 'userInfo', params: { uid: item.uid } }">
-            <Button type="text" style="color:#2d8cf0;">{{ item.username }}</Button>
+            <Button type="text" style="color:#2d8cf0;"> lianxm </Button>
           </router-link>
         </td>
-        <td v-if="item.judge === 'Accepted'" style="color:green">
-          {{ item.judge }}
+        <td v-if="item.result === 'Accepted'" style="color:green">
+          {{item.result}}
         </td>
-        <td v-else-if="item.judge === 'Compilation Error'" style="color:purple">
-          {{ item.judge }}
+        <td v-else-if="item.result === 'Compilation Error'" style="color:purple">
+          {{item.result}}
         </td>
-        <td v-else-if="item.judge === 'Wrong Answer'" style="color:red">
-          {{ item.judge }}
+        <td v-else-if="item.result === 'Wrong Answer'" style="color:red">
+          {{ item.result }}
         </td>
-        <td>{{ item.time * 100}}</td>
+        <td v-else style="color:blue">
+          {{ item.result }}
+        </td>
+        <td>{{ item.run_time }}</td>
 
         <td v-if="item.memory === null">
             0
         </td>
-        
         <td v-else>
             {{item.memory}}
         </td>
@@ -107,9 +108,11 @@ export default {
         getSubmissions: function() {
             var self = this;
             axios
-            .get(process.env.BASE_API + '/api/v1/submission/list')
+            .get(process.env.BASE_API + '/v1/submit/list')
             .then(function(response) {
+              console.log("response:",  response)
               self.list = response.data.data.reverse()
+              console.log(self.list)
             })
         }
     },
