@@ -2,113 +2,111 @@
   <div class="proinfo-wrap">
     <!-- <problem :problem="problem" /> -->
     <ul>
-      <li v-for="i in totalProblems" :key="i" :class="{'active': i === proIndex }" @click="pageChange(i)">
+      <li v-for="i in totalProblems" :key="i" :class="{'active': i === position + 1}" @click="pageChange(i)">
         {{ i }}
       </li>
     </ul>
+
     <div class="proinfo-wrap">
-        <slot name="title"><h1>{{ problem.index }}:  {{ problem.title }}</h1></slot>
+        <slot name="title"><h1>{{ position + 1 }}:  {{ problem.name }}</h1></slot>
         <!-- <h5>Time Limit: {{ problem.time }}MS&nbsp;&nbsp;&nbsp;Memory Limit: {{ problem.memory }}KB</h5> -->
-        <h5>Time Limit: 1000MS&nbsp;&nbsp;&nbsp;Memory Limit:  32768KB</h5>
+        <h5>Time Limit: {{problem.time_limit}}MS&nbsp;&nbsp;&nbsp;Memory Limit:  {{problem.memory_limit}}KB</h5>
         <h2 class="text-primary">Description</h2>
-        <div class="cont">
+        <div class="cont" v-html="problem.description">
             {{ problem.description }}
         </div>
         <h2>Input</h2>
-        <div class="cont">
-            {{ problem.input }}
+        <div class="cont" v-html="problem.input_des">
+            {{ problem.input_des }}
         </div>
         <h2>Output</h2>
-        <div class="cont">
-            {{ problem.output }}
+        <div class="cont" v-html="problem.output_des">
+            {{ problem.output_des }}
         </div>
         <h2>Sample Input
         <!-- <Tooltip content="Click to copy" placement="top">
             <Icon type="document" v-clipboard:copy="problem.in" v-clipboard:success="onCopy" style="cursor: pointer"></Icon>
         </Tooltip> -->
         </h2>
-        <pre><code>{{ problem.sample_input }}</code></pre>
+        <pre><code>{{ problem.case_data_input }}</code></pre>
         <h2>Sample Output
         <!-- <Tooltip content="Click to copy" placement="top">
             <Icon type="document" v-clipboard:copy="problem.out" v-clipboard:success="onCopy" style="cursor: pointer"></Icon>
         </Tooltip> -->
         </h2>
-        <pre><code>{{ problem.sample_output }}</code></pre>
-        <!-- <div v-if="problem.hint">
+        <pre><code>{{ problem.case_data_output }}</code></pre>
+        <div v-if="problem.hint">
             <h2>Hint</h2>
-            <div class="cont"></div>
-        </div> -->
+            <div class="cont" v-html="problem.hint">
+              {{problem.hint}}
+            </div>
+        </div>
     </div>
     <Button shape="circle" icon="ios-send" @click="submit">Submit</Button>
   </div>
 </template>
 
 <script>
-import axios from "axios";
+import http from "../../http.js";
+import { mapGetters } from "vuex";
 export default {
   data() {
     return {
-      problem: "",
-      proIndex: "",
-      totalProblems: ""
+      cid: this.$route.params.cid,
+      position: this.$route.params.id,
+      problem: ""
     };
   },
+  created() {
+    if (this.list == undefined) {
+      this.$store.dispatch("contest/findOne", this.cid);
+    }
+    this.getProblem(this.list[this.position].pid)
+      .then(res => {
+        this.problem = res.data.problem;
+      })
+      .catch(err => {
+        this.$Message.error(err.message);
+      });
+  },
+  computed: {
+    ...mapGetters({
+      totalProblems: "contest/totalProblems",
+      list: "contest/problems"
+    })
+  },
   methods: {
-    getProblemDetail: function() {
-      // this.pid = this.$route.params.pid
-      this.cid = this.$route.params.cid;
-      this.id = this.$route.params.id;
-      var self = this;
-
-      //  self.proIndex =  parseInt(self.$route.params.id)
-
-      axios
-        .get(process.env.BASE_API + "/api/v1/contest/problem/detail", {
-          params: {
-            problem_index: self.id,
-            contest_id: self.cid
-          }
-        })
-        .then(function(response) {
-          self.problem = response.data.data;
-          self.proIndex = parseInt(self.problem.index);
-        });
-    },
-    getContestOverView: function() {
-      var self = this;
-      axios
-        .get(process.env.BASE_API + "/api/v1/contest/detail", {
-          params: {
-            contest_id: self.cid
-          }
-        })
-        .then(function(response) {
-          self.overview = response.data.data;
-          self.totalProblems = parseInt(self.overview.contest.problems);
-        });
-    },
     submit() {
       this.$router.push({
         name: "contestProblemSubmit",
         params: this.$router.params
       });
     },
-    pageChange(val) {
-      this.$router.push({
-        name: "contestProblemInfo",
-        params: { id: val, cid: this.cid }
+    getProblem(pid) {
+      return http.get("problem/detail", {
+        params: {
+          pid: pid
+        }
       });
+    },
+    pageChange(position) {
+      position = position - 1;
+      console.log("position:");
+      console.log(position);
+      this.position = position;
+      this.getProblem(this.list[this.position].pid)
+        .then(res => {
+          this.problem = res.data.problem;
+        })
+        .catch(err => {
+          this.$Message.error(err.message);
+        });
+      console.log(this.problem);
     }
-  },
-  mounted: function() {
-    this.getContestOverView();
-  },
-  created() {
-    this.getProblemDetail();
-  },
-  watch: {
-    $route: "getProblemDetail"
   }
+  // watch: {
+  //   $route: "getProblemDetail"
+  // }
 };
 </script>
 

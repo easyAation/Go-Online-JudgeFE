@@ -30,7 +30,9 @@
         <pre><code>{{ problem.case_data_output }}</code></pre>
         <div v-if="problem.hint" v-html="problem.hint">
             <h2>Hint</h2>
-            <div class="cont"></div>
+            <div class="cont">
+              {{problem.hint}}
+            </div>
         </div>
     </div>
     <Button shape="circle" icon="ios-send" @click="submit">Submit</Button>

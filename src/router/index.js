@@ -5,18 +5,24 @@ import ProblemEdit from '../views/Problem/ProblemEdit'
 import ProblemList from '../views/Problem/ProblemList'
 import FAQ from '../views/FAQ'
 import NewsInfo from '../views/News/NewsInfo'
+
 import Problem from '../views/Problem/Problem'
 import ProblemSubmit from '../views/Problem/ProblemSubmit'
 import ProblemInfo from '../views/Problem/ProblemInfo'
+import ProblemCreate from '../views/Admin/problemCreate.vue'
+
 import UserInfo from '../views/UserInfo'
 import Status from '../views/Status'
 import Solution from '../views/Solution'
+
 import ContestList from '../views/Contest/ContestList'
 import Contest from '../views/Contest/Contest'
+import ContestCreate from '../views/Admin/ContestCreate.vue'
 import ContestOverview from '../views/Contest/ContestOverview'
 import ContestProblemSubmit from '../views/Contest/ContestSubmit'
-import ContestProblemInfo from '../views/Contest/ContestProblemInfo'
+import ContestProblem from '../views/Contest/ContestProblem'
 import ContestStatus from '../views/Contest/ContestStatus'
+
 import RankList from '../views/RankList'
 import AdminEdit from '../views/Admin/AdminEdit.vue'
 
@@ -73,6 +79,12 @@ const router = new Router({
     }]
   },
   {
+    path: '/problem/create',
+    name: 'problemCreate',
+    component: ProblemCreate,
+    meta: { title: 'Problem Create' }
+  },
+  {
     path: '/status',
     name: 'status',
     component: Status,
@@ -109,6 +121,12 @@ const router = new Router({
     meta: { title: "Contest List" }
   },
   {
+    path: '/contest/create',
+    name: 'contestCreate',
+    component: ContestCreate,
+    meta: { title: 'Admin' }
+  },
+  {
     path: '/contest/:cid',
     component: Contest,
     meta: { isLogin: true },
@@ -127,8 +145,8 @@ const router = new Router({
     },
     {
       path: 'problem/:id',
-      component: ContestProblemInfo,
-      name: 'contestProblemInfo',
+      component: ContestProblem,
+      name: 'contestProblem',
       meta: { title: 'Problem Info' }
     },
     {
@@ -146,5 +164,4 @@ router.beforeEach((to, from, next) => {
   }
   next()
 })
-
 export default router

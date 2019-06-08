@@ -42,6 +42,16 @@
                         FAQ
                 </MenuItem>
                 </router-link>
+
+                <Submenu v-if="isLogined" name="admin">
+                    <template slot="title">
+                        <Icon type="paper-airplane"></Icon>Admin
+                    </template>
+                    <MenuItem name="problemCreate" :to="{name: 'problemCreate'}">创建题目</MenuItem>
+                    <MenuItem name="contestCreate" :to="{name: 'contestCreate'}">创建比赛</MenuItem>
+                    <MenuItem name="newsCreate">创建新闻</MenuItem>
+                    <MenuItem name="userEdit">用户管理</MenuItem>
+                </Submenu>
                 </div>
             </Menu>
             <div class="right">

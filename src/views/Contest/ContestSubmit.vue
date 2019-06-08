@@ -1,6 +1,6 @@
 <template lang="html">
   <div>
-    <h1>{{ index }}:  {{ title }}</h1>
+    <h1>{{ position }}:  {{ title }}</h1>
     <div>
     <Form v-model="solution">
       <FormItem label="Language" label-position="left">
@@ -27,13 +27,15 @@
 
 <script>
 import axios from "axios";
+import { mapGetters } from "vuex";
 export default {
   data() {
     return {
       solution: [],
       isLogin: localStorage.getItem("Flag"),
       title: "",
-      index: ""
+      cid: this.$route.params.cid,
+      position: this.$route.params.id
     };
   },
   methods: {
@@ -72,12 +74,18 @@ export default {
     }
   },
   mounted: function() {
-    this.getProblemDetail();
+    //this.getProblemDetail();
+    this.title = this.list[this.position].title;
+  },
+  computed: {
+    ...mapGetters({
+      list: "contest/problems"
+    })
   },
   created() {
-    // this.id = this.$route.params.pid;
-    this.cid = this.$route.params.cid;
-    this.id = this.$route.params.id;
+    if (this.list == undefined) {
+      this.$store.dispatch("contest/findOne", this.cid);
+    }
   }
 };
 </script>

@@ -1,8 +1,8 @@
 <template lang="html">
   <div class="conover-wrap">
-    <h1>{{ overview.contest.title }}</h1>
-    <h3>Start Time:&nbsp;&nbsp;{{ overview.contest.start_time | timePretty }}</h3>
-    <h3>End Time:&nbsp;&nbsp;{{ overview.contest.end_time | timePretty }}</h3>
+    <h2>{{ contest.title }}</h2>
+    <h4>Start Time:&nbsp;&nbsp;{{ contest.create_at | timePretty }}</h4>
+    <h4>End Time:&nbsp;&nbsp;{{ contest.end_at | timePretty }}</h4>
     <table>
       <tr>
         <th>#</th>
@@ -10,19 +10,19 @@
         <th>Title</th>
         <th>Ratio</th>
       </tr>
-      <tr v-for="(item, index) in overview.problem" :key="item.pid">
+      <tr v-for="(item, index) in problems" :key="item.pid">
         <td>
-          <Icon v-if="1 !== -1" type="checkmark-round"></Icon>
+          <Icon v-if="solved.indexOf(item.pid) !== -1" type="checkmark-round"></Icon>
         </td>
-        <!-- <td>{{ index + 1 }}</td> -->
-        <td>{{ item.index }}</td>
+        <td>{{ index + 1 }}</td>
         <td>
-          <router-link :to="{ name: 'contestProblemInfo', params: { pid: item.id,cid: cid, id: item.index } }">
-            <Button type="text" style="color:#2d8cf0">{{ item.title }}</Button>
+          <router-link :to="{ name: 'contestProblem', params: { cid: cid, id: index }}">
+            <Button type="text">{{ item.title }}</Button>
           </router-link>
         <td>
-          <!-- <span>{{ item.solve / (item.submision + 0.000001) | formate }}</span>&nbsp; -->
-          ({{ item.solve }} / {{ item.submission }})
+          <!-- <span v-if="item.submit === 0">0%</span> -->
+          <span>{{ item.solve_count / (item.submit_count + 0.000001) | formate }}</span>&nbsp;
+          ({{ item.solve_count }} / {{ item.submit_count }})
         </td>
       </tr>
     </table>
@@ -30,92 +30,66 @@
 </template>
 
 <script>
-import axios from "axios";
+import { mapGetters, mapActions } from "vuex";
+
 export default {
   data() {
     return {
-      overview: [],
-      cid: ""
+      cid: this.$route.params.cid
     };
   },
-  methods: {
-    getContestOverView: function() {
-      var self = this;
-      axios
-        .get(process.env.BASE_API + "/api/v1/contest/detail", {
-          params: {
-            contest_id: self.cid
-          }
-        })
-        .then(function(response) {
-          self.overview = response.data.data;
-        });
+  computed: {
+    ...mapGetters({
+      contest: "contest/contest",
+      problems: "contest/problems",
+      solved: "contest/solved"
+      // profile: "session/profile"
+    }),
+    query() {
+      let uid;
+      if (this.profile) {
+        uid = this.profile.uid;
+      }
+      const opt = {
+        cid: this.$route.params.cid,
+        uid
+      };
+      return opt;
     }
   },
-  mounted: function() {
-    this.getContestOverView();
-  },
   created() {
-    this.cid = this.$route.params.cid;
+    //this.fetch();
+    //this.changeDomTitle({ title: `Contest ${this.$route.params.cid}` });
+    this.$store.dispatch("contest/findOne", this.cid);
+  },
+  methods: {
+    ...mapActions(["changeDomTitle"]),
+    fetch() {
+      this.$store.dispatch("contest/findOne", this.query);
+    }
+  },
+  watch: {
+    // 浏览器后退时回退页面
+    $route(to, from) {
+      if (to !== from) this.fetch();
+    },
+    profile(val) {
+      this.$store.dispatch("contest/findOne", this.query);
+    }
   }
 };
 </script>
 
-<style lang="stylus">
-table {
-  width: 100%;
-  border-collapse: collapse;
-  border-spacing: 0;
+<style lang="stylus" scoped>
+@import '../../styles/common';
 
-  th:nth-child(1) {
-    padding-left: 10px;
-  }
-
-  tr {
-    border-bottom: 1px solid #ebeef5;
-    height: 40px;
-    line-height: 40px;
-    font-size: 14px;
-
-    td:nth-child(1) {
-      padding-left: 10px;
-    }
-  }
-
-  th {
-    text-align: left;
-  }
-
-  .ivu-btn {
-    vertical-align: baseline;
-    color: #e040fb;
-    padding: 0 1px;
-    font-size: 14px;
-  }
-}
-
-table {
-  th:nth-child(1) {
-    width: 5%;
-  }
-
-  th:nth-child(2) {
-    width: 5%;
-  }
-
-  th:nth-child(3) {
-    width: 60%;
-  }
-}
-
-h1 {
+h2 {
   text-align: center;
   margin-top: 10px;
   margin-bottom: 8px;
-  font-size: 30px;
 }
 
-h3 {
+h4 {
   text-align: center;
   margin-bottom: 8px;
 }

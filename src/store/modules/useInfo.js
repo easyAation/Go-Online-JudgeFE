@@ -11,7 +11,7 @@ const userInfo = {
 
   mutations: {
     ['UPDATED_INFO']: (state, info) => {
-      state.info = info
+      state.info = inf
     },
     ['UPDATED_SOLVE_PROBLEMS']: (state, solves) => {
       state.solveProblems = solves
