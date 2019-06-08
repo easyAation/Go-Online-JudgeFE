@@ -1,6 +1,6 @@
 <template lang="html">
   <div>
-    <h1>{{ index }}:  {{ title }}</h1>
+    <h1>{{ position }}:  {{ title }}</h1>
     <div>
     <Form v-model="solution">
       <FormItem label="Language" label-position="left">
@@ -26,66 +26,76 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from "axios";
+import { mapGetters } from "vuex";
 export default {
-    data() {
-        return {
-            solution: [],
-            isLogin: localStorage.getItem('Flag'),
-            title: '',
-            index: '',
-        }
+  data() {
+    return {
+      solution: [],
+      isLogin: localStorage.getItem("Flag"),
+      title: "",
+      cid: this.$route.params.cid,
+      position: this.$route.params.id
+    };
+  },
+  methods: {
+    getProblemDetail: function() {
+      var self = this;
+      axios
+        .get(process.env.BASE_API + "/api/v1/contest/problem/detail", {
+          params: {
+            problem_index: self.id,
+            contest_id: self.cid
+          }
+        })
+        .then(function(response) {
+          self.title = response.data.data.title;
+          self.index = response.data.data.index;
+        });
     },
-    methods: {
-        getProblemDetail: function() {
-            var self = this;
-            axios
-            .get(process.env.BASE_API + '/api/v1/contest/problem/detail',{
-                params: {
-                    problem_index: self.id,
-                    contest_id: self.cid
-                }
-            })
-            .then(function(response){
-                self.title = response.data.data.title
-                self.index = response.data.data.index
-            })
-        },
-        submit() {
-          var self = this
-          var data = {
-          "pid":self.id.toString(),
-          "uid":localStorage.getItem("uid"),
-          "cid":self.cid.toString(),
-          "index":self.id.toString(),
-          "username":localStorage.getItem("Username").toString(),
-          "code": self.solution.code,
-          "language": self.solution.language.toString(),
-        }
+    submit() {
+      var self = this;
+      var data = {
+        pid: self.id.toString(),
+        uid: localStorage.getItem("uid"),
+        cid: self.cid.toString(),
+        index: self.id.toString(),
+        username: localStorage.getItem("Username").toString(),
+        code: self.solution.code,
+        language: self.solution.language.toString()
+      };
 
       axios
-      .post(process.env.BASE_API + '/api/v1/contest/problem/submit',JSON.stringify(data))
-      .then(function(response){
-          
-      })
+        .post(
+          process.env.BASE_API + "/api/v1/contest/problem/submit",
+          JSON.stringify(data)
+        )
+        .then(function(response) {});
     }
-    },
-    mounted: function() {
-        this.getProblemDetail()
-    },
-    created() {
-      // this.id = this.$route.params.pid;
-      this.cid = this.$route.params.cid
-      this.id = this.$route.params.id
+  },
+  mounted: function() {
+    //this.getProblemDetail();
+    this.title = this.list[this.position].title;
+  },
+  computed: {
+    ...mapGetters({
+      list: "contest/problems"
+    })
+  },
+  created() {
+    if (this.list == undefined) {
+      this.$store.dispatch("contest/findOne", this.cid);
+    }
   }
-}
+};
 </script>
 
 <style lang="stylus" scoped>
-h1
-  color: #9799ca
-  margin-top: 10px
-  margin-bottom: 20px
-  text-align:center
-  font-size: 30px
+h1 {
+  color: #9799ca;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 30px;
+}
 </style>
