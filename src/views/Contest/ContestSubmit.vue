@@ -1,101 +1,159 @@
 <template lang="html">
   <div>
-    <h1>{{ position }}:  {{ title }}</h1>
+    <h1>{{  parseInt(this.$route.params.id) + 1}}:  {{ problem.name }}</h1>
     <div>
     <Form v-model="solution">
-      <FormItem label="Language" label-position="left">
+      <FormItem label="language" label-position="left" value="C">
         <Select v-model="solution.language">
-          <Option :value="10">C++ (g++ 7.2.0)</Option>
-          <Option :value="4">C (gcc 7.2.0)</Option>
-          <Option :value="28">Java (openJDK)</Option>
-          <Option :vaule="34">Python (3.6.0)</Option>
-          <Option :vaule="36">Python (2.7.9)</Option>
+          <Option value="C">C (gcc 7.2.0)</Option>
+          <Option value="CPP">C++ (g++ 7.2.0)</Option>
+          <Option value="Golang">Golang</Option>
         </Select>
       </FormItem>
+
       <FormItem>
          <Input v-model="solution.code" type="textarea" :autosize="{minRows:15,maxRows: 20}" placeholder="Paste your code here"></Input>
        </FormItem>
     </Form>
     </div>
-    <router-link :to="{ name:'contestStatus' }">
+  
+    <!--
     <Button type="primary" @click="submit" :disabled="!isLogin">Submit</Button>
-    </router-link>
+    -->
+    <Button type="primary" @click="submit">Submit</Button>
+   
     <Button style="margin-left: 8px" @click="reset">Reset</Button>
-    <p v-if="!isLogin">Please Log in First</p>
+
+  <Modal
+        v-model="toDisplayModal"
+        @on-ok="ok"
+        :title="modelTitle"
+        @on-cancel="cancel">
+        <div display:inline>
+          <Spin >
+            <div>
+             <p v-if="res.result === 'Accepted'" style="color:green">
+                    {{res.result}}
+             </p>
+             <p v-else-if="res.result === 'Compilation Error'" style="color:purple">
+                    {{res.result}}
+             </p>
+             <p v-else-if="res.result === 'Wrong Answer'" style="color:red">
+                   {{ res.result }}
+             </p>
+             <p v-else-if="res.result === 'Time Limit'" style="color:red">
+                   {{ res.result }}
+             </p>
+             <p v-else-if="res.result !== '' " style="color:metting">
+                  {{ res.result }}
+             </p>
+             </div>
+          </Spin>
+             
+             <!-- <p> {{res.time}}ms </p>
+             <p> {{res.memoty}}b</P> -->
+        </div>
+        <!-- <pre> {{solution.code}} </pre> -->
+    </Modal>
+
   </div>
 </template>
 
 <script>
-import axios from "axios";
+import http from "../../http.js";
+import uuid from "../../utils/uuid";
 import { mapGetters } from "vuex";
 export default {
   data() {
     return {
-      solution: [],
-      isLogin: localStorage.getItem("Flag"),
-      title: "",
-      cid: this.$route.params.cid,
-      position: this.$route.params.id
+      problem: {},
+      isLogin: localStorage.getItem("token"),
+      toDisplayModal: false,
+      solution: {
+        code: "",
+        language: ""
+      },
+      modelTitle: "",
+      res: {
+        result: "panding"
+      },
+      id: 0
     };
-  },
-  methods: {
-    getProblemDetail: function() {
-      var self = this;
-      axios
-        .get(process.env.BASE_API + "/api/v1/contest/problem/detail", {
-          params: {
-            problem_index: self.id,
-            contest_id: self.cid
-          }
-        })
-        .then(function(response) {
-          self.title = response.data.data.title;
-          self.index = response.data.data.index;
-        });
-    },
-    submit() {
-      var self = this;
-      var data = {
-        pid: self.id.toString(),
-        uid: localStorage.getItem("uid"),
-        cid: self.cid.toString(),
-        index: self.id.toString(),
-        username: localStorage.getItem("Username").toString(),
-        code: self.solution.code,
-        language: self.solution.language.toString()
-      };
-
-      axios
-        .post(
-          process.env.BASE_API + "/api/v1/contest/problem/submit",
-          JSON.stringify(data)
-        )
-        .then(function(response) {});
-    }
-  },
-  mounted: function() {
-    //this.getProblemDetail();
-    this.title = this.list[this.position].title;
   },
   computed: {
     ...mapGetters({
+      isLogined: "session/isLogined",
       list: "contest/problems"
     })
   },
-  created() {
-    if (this.list == undefined) {
-      this.$store.dispatch("contest/findOne", this.cid);
+  methods: {
+    ok() {
+      this.$Message.info("Clicked ok");
+    },
+    cancel() {
+      this.$Message.info("Clicked cancel");
+    },
+    getProblemDetail(pid) {
+      var self = this;
+      http
+        .get("problem/detail", {
+          params: {
+            pid: pid
+          }
+        })
+        .then(function(res) {
+          self.problem = res.data.problem;
+        });
+    },
+    reset() {},
+    submit() {
+      console.log(this.$route.params.cid);
+      this.res.result = "pending";
+      let pro = this.problem;
+      var data = {
+        id: uuid.uuid(8, 32).toLowerCase(),
+        cid: parseInt(this.$route.params.cid),
+        problem_id: pro.id,
+        code: this.solution.code,
+        language: this.solution.language,
+        time_limit: pro.time_limit,
+        memory_limit: pro.memory_limit
+      };
+      console.log(data);
+      this.modelTitle = "#" + data.id + "uid for " + pro.id;
+      let account = JSON.parse(localStorage.getItem("account"));
+      http
+        .post("contest/submit", JSON.stringify(data))
+        .then(res => {
+          this.res = res.data.data;
+          console.log(res.data);
+        })
+        .catch(err => {
+          this.res.result = "system error!";
+          console.log(err.message);
+        });
+      this.toDisplayModal = true;
     }
+  },
+  mounted: function() {
+    this.getProblemDetail(this.list[this.id].pid);
+  },
+  created() {
+    this.id = this.$route.params.id;
   }
 };
 </script>
 
-<style lang="stylus" scoped>
+<style lang="stylus">
 h1 {
-  color: #9799ca;
+  margin-bottom: 10px;
+  color: #9799CA;
   margin-top: 10px;
-  margin-bottom: 20px;
   text-align: center;
   font-size: 30px;
+}
+
+.ivu-form-res-label {
+  font-size: 16px;
 }
 </style>

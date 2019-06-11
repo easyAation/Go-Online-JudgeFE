@@ -22,6 +22,13 @@ const session = {
         localStorage.setItem("name", res.data.name)
       })
     },
+    register(ctx, data) {
+      return http.post("account/register", JSON.stringify(data)).then(res => {
+        ctx.commit("UPDATE_ACCOUNT_INFO", res.data)
+        localStorage.setItem("token", res.data.token)
+        localStorage.setItem("name", res.data.name)
+      })
+    },
     logout(ctx) {
       ctx.commit("UPDATE_ACCOUNT_INFO", {
         uid: '',

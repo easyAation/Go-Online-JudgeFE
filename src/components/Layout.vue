@@ -159,6 +159,7 @@ export default {
       }
     },
     submit(behavior) {
+      console.log(behavior);
       if (behavior == "login") {
         this.$store
           .dispatch("session/signin", {
@@ -175,6 +176,18 @@ export default {
           .catch(err => {
             //   this.$Message.error("帐号或者密码错误!");
             console.log(err.message);
+          });
+      } else if (behavior == "register") {
+        this.$store
+          .dispatch("session/register", {
+            id: this.form.uid,
+            name: this.form.name,
+            password: this.form.pwd,
+            githup_addr: this.form.githup,
+            blog_addr: this.form.blog
+          })
+          .then(res => {
+            this.$Message.success("欢迎!");
           });
       }
     }
