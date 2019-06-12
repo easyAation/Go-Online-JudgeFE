@@ -15,7 +15,7 @@
       <TabPane label="Problem" name="contestProblem"></TabPane>
       <!-- <TabPane label="Submit" name="contestSubmit"></TabPane> -->
       <TabPane label="Status" name="contestStatus"></TabPane>
-      <TabPane label="Ranklist" name="contestRanklist"></TabPane>
+      <TabPane label="Ranklist" name="contestRank"></TabPane>
       <!-- <TabPane label="Edit" name="contestEdit" v-if="isAdmin"></TabPane> -->
     </Tabs>
     <router-view v-if="contest && contest.id"></router-view>
@@ -54,6 +54,7 @@ export default {
   created() {
     this.display = this.$route.name;
     this.$store.dispatch("contest/findOne", this.$route.params.cid);
+    this.$store.dispatch("contest/getSubmission", this.$route.params.cid);
   },
   methods: {
     handleClick(name) {

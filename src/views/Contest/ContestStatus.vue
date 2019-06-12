@@ -41,7 +41,7 @@
     </Row>
     <Row class="pagination">
       <Col :span="16">
-        <Page :total="sum" @on-change="pageChange" :page-size="pageSize" :current.sync="page" show-elevator></Page>
+        <Page :total="count" @on-change="changePage" :page-size="pageSize" :current.sync="currentIndex" show-elevator></Page>
       </Col>
     </Row>
     <table>
@@ -56,28 +56,34 @@
         <th>Submit Time</th>
       </tr>
       
-      <tr v-for="(item, index) in list" :key="item.id">
-        <td>{{ item.id }}</td>
+      <tr v-for="(item, index) in showList" :key="item.id">
+        <td>{{ item.submit_id }}</td>
         <td>
-          <router-link :to="{ name: 'contestProblemInfo', params: { id: item.index } }">
+          <router-link :to="{ name: 'contestProblem', params: { id: item.id } }">
             {{ item.pid }}
           </router-link>
         </td>
         <td>
           <router-link :to="{ name: 'userInfo', params: { uid: item.uid } }">
-            <Button type="text" style="color:#2d8cf0;">{{ item.username }}</Button>
+            <Button type="text" style="color:#2d8cf0;">{{ item.uid }}</Button>
           </router-link>
         </td>
-        <td v-if="item.judge === 'Accepted'" style="color:green">
-          {{ item.judge }}
+        <td v-if="item.result === 'Accepted'" style="color:green">
+          {{item.result}}
         </td>
-        <td v-else-if="item.judge === 'Compilation Error'" style="color:purple">
-          {{ item.judge }}
+        <td v-else-if="item.result === 'Compilation Error'" style="color:purple">
+          {{item.result}}
         </td>
-        <td v-else-if="item.judge === 'Wrong Answer'" style="color:red">
-          {{ item.judge }}
+        <td v-else-if="item.result === 'Wrong Answer'" style="color:red">
+          {{ item.result }}
         </td>
-        <td>{{ item.time * 100}}</td>
+        <td v-else-if="item.result !== '' " style="color:blue">
+          {{ item.result }}
+        </td>
+        <td v-else style="color:purple">
+            Compileing
+        </td>
+        <td>{{ item.run_time}}</td>
 
         <td v-if="item.memory === null">
             0
@@ -94,30 +100,72 @@
 </template>
 
 <script>
-import axios from "axios";
+import http from "../../http.js";
+import { clearInterval } from "timers";
+import { mapGetters } from "vuex";
 export default {
   data() {
     return {
+      uid: "",
+      pid: "",
+      judge: "",
+      language: "",
       list: [],
+      showList: [],
+      currentIndex: 1,
+      pageSize: 2,
       judgeList: [],
       languageList: []
     };
   },
-  methods: {
-    getSubmissions: function() {
-      var self = this;
-      axios
-        .get(process.env.BASE_API + "/api/v1/contest/submission")
-        .then(function(response) {
-          self.list = response.data.data.reverse();
-        });
-    }
+  computed: {
+    ...mapGetters({
+      submission: "contest/submission",
+      count: "contest/submissionTotal"
+    })
   },
-  mounted: function() {
-    this.getSubmissions();
+  methods: {
+    getSubmissions() {
+      this.$store
+        .dispatch("contest/getSubmission", this.$route.params.cid)
+        .then(res => {
+          let start = (this.currentIndex - 1) * this.pageSize;
+          let end = start + this.pageSize;
+          this.showList = this.submission.slice(start, end);
+        })
+        .catch(err => {
+          this.$Message.error(err.message);
+          console.log(this.submission);
+        });
+      // http.get("contest/submission").then(res => {
+      //   console.log(res);
+      //   this.list = res.data.list.reverse();
+      //   this.count = res.data.total;
+
+      //   let start = (this.currentIndex - 1) * this.pageSize;
+      //   let end = start + this.pageSize;
+      //   this.showList = this.list.slice(start, end);
+      // });
+    },
+    changePage(index) {
+      console.log(index);
+      let start = (index - 1) * this.pageSize;
+      let end = start + this.pageSize;
+      this.showList = this.submission.slice(start, end);
+    },
+    search() {}
   },
   created() {
     this.cid = this.$route.params.cid;
+    this.getSubmissions();
+  },
+  mounted() {
+    this.timer = setInterval(() => {
+      this.getSubmissions();
+    }, 5000);
+  },
+  beforeDestroy() {
+    window.clearInterval(this.timer);
   }
 };
 </script>

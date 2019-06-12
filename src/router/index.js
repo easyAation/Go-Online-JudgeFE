@@ -22,6 +22,7 @@ import ContestOverview from '../views/Contest/ContestOverview'
 import ContestProblemSubmit from '../views/Contest/ContestSubmit'
 import ContestProblem from '../views/Contest/ContestProblem'
 import ContestStatus from '../views/Contest/ContestStatus'
+import ContestRank from '../views/Contest/ContestRank.vue'
 
 import RankList from '../views/RankList'
 import AdminEdit from '../views/Admin/AdminEdit.vue'
@@ -154,6 +155,12 @@ const router = new Router({
       component: ContestStatus,
       name: 'contestStatus',
       meta: { title: 'Contest Status' }
+    },
+    {
+      path: 'rank',
+      component: ContestRank,
+      name: 'contestRank',
+      meta: { title: 'Contest Rank' }
     }]
   }, ]
 })

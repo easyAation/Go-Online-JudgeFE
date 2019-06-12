@@ -126,7 +126,7 @@ export default {
         .post("contest/submit", JSON.stringify(data))
         .then(res => {
           this.res = res.data.data;
-          console.log(res.data);
+          this.$store.dispatch("contest/getSubmission");
         })
         .catch(err => {
           this.res.result = "system error!";

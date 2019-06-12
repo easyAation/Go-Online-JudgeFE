@@ -28,7 +28,7 @@
       <template v-for="(item, index) in showList">
         <tr>
           <td>
-             <Icon v-if="isSolve(item.id)" size="25" type="ios-checkmark" style="color:red"> </Icon> 
+             <Icon v-if="isSolve(item.id) && isLogined" size="25" type="ios-checkmark" style="color:red"> </Icon> 
           </td>
           <td>{{ item.id }}</td>
           <td>
@@ -77,6 +77,7 @@ export default {
     ...mapGetters({
       list: "problems/problems",
       solves: "userInfo/solves",
+      isLogined: "session/isLogined",
       problemCount: "problems/problemCount"
     })
   },

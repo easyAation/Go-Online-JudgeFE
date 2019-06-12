@@ -38,7 +38,7 @@ const problems = {
       let pro = state.problems.find(pro => pro.id == id)
       if (pro != undefined)
         return pro
-    }
+    },
   }
 }
 

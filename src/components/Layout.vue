@@ -150,6 +150,7 @@ export default {
     profileAction(name) {
       if (name == "logout") {
         this.$store.dispatch("session/logout");
+        this.$store.dispatch("userInfo/init");
         this.$Message.info("bye bye!");
       } else if (name == "profile") {
         this.$router.push({
@@ -167,6 +168,7 @@ export default {
             password: this.form.pwd
           })
           .then(res => {
+            localStorage.setItem("uid", this.form.uid);
             this.$Message.success("登录成功!");
             this.$store.dispatch(
               "userInfo/getUserSolves",

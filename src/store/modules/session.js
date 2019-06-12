@@ -37,6 +37,7 @@ const session = {
       })
       localStorage.removeItem("token")
       localStorage.removeItem("name")
+      localStorage.removeItem("uid")
     },
     init(ctx) {
       let token = localStorage.getItem("token")

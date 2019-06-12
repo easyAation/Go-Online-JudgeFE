@@ -12,7 +12,8 @@
       </tr>
       <tr v-for="(item, index) in problems" :key="item.pid">
         <td>
-          <Icon v-if="solved.indexOf(item.pid) !== -1" type="checkmark-round"></Icon>
+           <Icon v-if=" isLogined && solved(item.pid) == 2" size="25" type="ios-checkmark" style="color:red"> </Icon> 
+          <Icon v-else-if="solved(item.pid) == 1" size="25" type="ios-close" style="color:red"></Icon>
         </td>
         <td>{{ index + 1 }}</td>
         <td>
@@ -21,8 +22,8 @@
           </router-link>
         <td>
           <!-- <span v-if="item.submit === 0">0%</span> -->
-          <span>{{ item.solve_count / (item.submit_count + 0.000001) | formate }}</span>&nbsp;
-          ({{ item.solve_count }} / {{ item.submit_count }})
+          <span>{{ solveCount(item.pid) / (submitCount(item.pid) + 0.000001) | formate }}</span>&nbsp;
+          ({{ solveCount(item.pid) }} / {{ submitCount(item.pid) }})
         </td>
       </tr>
     </table>
@@ -42,8 +43,8 @@ export default {
     ...mapGetters({
       contest: "contest/contest",
       problems: "contest/problems",
-      solved: "contest/solved"
-      // profile: "session/profile"
+      submission: "contest/submission",
+      isLogined: "session/isLogined"
     }),
     query() {
       let uid;
@@ -66,6 +67,43 @@ export default {
     ...mapActions(["changeDomTitle"]),
     fetch() {
       this.$store.dispatch("contest/findOne", this.query);
+    },
+    solved(pid) {
+      let uid = localStorage.getItem("uid");
+      if (uid === "") {
+        return 0;
+      }
+      let isTest = false;
+      for (let i = 0; i < this.submission.length; i++) {
+        if (uid == this.submission[i].uid && this.submission[i].pid == pid) {
+          isTest = true;
+          if (this.submission[i].result == "Accepted") return 2;
+        }
+      }
+      if (isTest) return 1;
+      return 0;
+    },
+    submitCount(pid) {
+      let count = 0;
+      let uid = localStorage.getItem("uid");
+      for (let i = 0; i < this.submission.length; i++) {
+        if (pid == this.submission[i].pid && this.submission[i].uid == uid)
+          count++;
+      }
+      return count;
+    },
+    solveCount(pid) {
+      let count = 0;
+      let uid = localStorage.getItem("uid");
+      for (let i = 0; i < this.submission.length; i++) {
+        if (
+          pid == this.submission[i].pid &&
+          this.submission[i].result == "Accepted" &&
+          this.submission[i].uid == uid
+        )
+          count++;
+      }
+      return count;
     }
   },
   watch: {

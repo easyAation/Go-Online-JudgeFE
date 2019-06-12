@@ -36,6 +36,10 @@ const userInfo = {
         console.log(res.data.data)
         ctx.commit("UPDATED_SOLVE_PROBLEMS", res.data.data)
       })
+    },
+    init(ctx) {
+      ctx.commit("UPDATED_SOLVE_PROBLEMS", [])
+      ctx.commit("UPDATE_INFO", null)
     }
   }
 }
