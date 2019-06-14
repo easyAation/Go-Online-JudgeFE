@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import http from "../../http.js";
 import {
   formate,
   timePretty,
@@ -56,12 +56,10 @@ export default {
   },
   methods: {
     getContestList: function() {
-      var self = this;
-      axios
-        .get(process.env.BASE_API + "/api/v1/contest/list")
-        .then(function(response) {
-          self.list = response.data.data.reverse();
-        });
+      http.get("contest/list").then(res => {
+        this.list = res.data.list;
+        console.log(this.list);
+      });
     },
     visit: function() {},
     formateTime(time) {

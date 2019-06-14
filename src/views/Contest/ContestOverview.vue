@@ -66,7 +66,7 @@ export default {
   methods: {
     ...mapActions(["changeDomTitle"]),
     fetch() {
-      this.$store.dispatch("contest/findOne", this.query);
+      this.$store.dispatch("contest/findOne", this.cid);
     },
     solved(pid) {
       let uid = localStorage.getItem("uid");
@@ -75,7 +75,7 @@ export default {
       }
       let isTest = false;
       for (let i = 0; i < this.submission.length; i++) {
-        if (uid == this.submission[i].uid && this.submission[i].pid == pid) {
+        if (uid === this.submission[i].uid && this.submission[i].pid === pid) {
           isTest = true;
           if (this.submission[i].result == "Accepted") return 2;
         }

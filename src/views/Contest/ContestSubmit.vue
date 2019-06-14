@@ -126,7 +126,7 @@ export default {
         .post("contest/submit", JSON.stringify(data))
         .then(res => {
           this.res = res.data.data;
-          this.$store.dispatch("contest/getSubmission");
+          this.$store.dispatch("contest/getSubmission", this.$route.params.cid);
         })
         .catch(err => {
           this.res.result = "system error!";

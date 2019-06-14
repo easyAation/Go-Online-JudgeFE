@@ -12,24 +12,26 @@
           <th>Nick</th>
           <th>Solve</th>
           <th>Penalty</th>
-          <th v-for="(item, index) in contest.list">
+          <th v-for="(item, index) in problems">
             {{ index + 1 }}
           </th>
         </tr>
         <tr v-for="(item, index) in ranklist">
           <td>{{ index + 1 }}</td>
-          <td>{{ item.uid }}</td>
-          <td>{{ item.nick }}</td>
+          <td>{{ item.id }}</td>
+          <td>{{ item.name }}</td>
           <td>{{ item.solved }}</td>
           <td class="straight">{{ item.penalty | timeContest }}</td>
-          <template v-for="pid in contest.list">
-            <td v-if="!item[pid]"></td>
+          <template v-for="p in problems">
+            <td v-if="solved(item.problems, p.pid) === 0"></td>
             <!-- !item[pid] 为 true 表示这道题没有提交过 -->
-            <td v-else-if="item[pid].wa >= 0" :class="[ item[pid].prime ? 'prime' : 'normal']">
-              {{ item[pid].create - contest.start | timeContest }}<span v-if="item[pid].wa">({{ item[pid].wa }})</span>
+             <!-- <td v-else-if="solved(item.problems, p.pid) == 1" :class="[ item[pid].prime ? 'prime' : 'normal']"> -->
+            <td v-else-if="solved(item.problems, p.pid) == 1" class= "normal">
+              {{  penalty(item.problems, p.pid, contest) | timeContest }}
+              accept {{failedCount(item.problems, p.pid)}}
             </td>
-            <td v-else :class="{'red': item[pid].wa}">
-              <span v-if="item[pid].wa">{{ item[pid].wa }}</span>
+            <td v-else class="red">
+              <span v-if="failedCount(item.problems, p.pid) > 0">{{ failedCount(item.problems, p.pid) }}</span>
             </td>
           </template>
         </tr>
@@ -39,26 +41,27 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters } from "vuex";
 
 export default {
   data: () => ({
-    timer: null
+    timer: null,
+    relation: new Map()
   }),
   computed: {
-    ...mapGetters("contest", ["ranklist", "contest"])
+    ...mapGetters("contest", ["ranklist", "contest", "problems"])
   },
   created() {
     this.getRank();
-    this.changeDomTitle({ title: `Contest ${this.$route.params.cid}` });
   },
   beforeDestroy() {
     clearInterval(this.timer);
   },
   methods: {
-    ...mapActions(["changeDomTitle"]),
     getRank() {
-      this.$store.dispatch("contest/getRank", this.$route.params.cid);
+      this.$store
+        .dispatch("contest/getRank", this.$route.params.cid)
+        .then(res => {});
     },
     change(status) {
       if (status) {
@@ -72,6 +75,34 @@ export default {
       } else {
         clearInterval(this.timer);
       }
+    },
+    solved(problems, pid) {
+      for (let p of problems) {
+        if (p.pid == pid) {
+          if (p.failed >= 0) return 1;
+          return -1;
+        }
+      }
+      return 0;
+    },
+    penalty(problems, pid, contest) {
+      for (let p of problems) {
+        if (p.pid == pid) {
+          return new Date(p.create_at).getTime() - contest.start_at;
+        }
+      }
+      return 0;
+    },
+    failedCount(problems, pid) {
+      console.log(problems);
+      for (let p of problems) {
+        if (p.pid == pid) {
+          console.log(pid);
+          if (p.failed < 0) return -p.failed;
+          return p.failed;
+        }
+      }
+      return 0;
     }
   }
 };

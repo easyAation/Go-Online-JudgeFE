@@ -14,10 +14,10 @@
                         题目
                 </MenuItem>
                 
-                <MenuItem name="discuss">
+                <!-- <MenuItem name="discuss">
                     <Icon type="ios-chatboxes" />
                         讨论
-                </MenuItem>
+                </MenuItem> -->
 
                 
                 <MenuItem name="status" :to="{name: 'status'}">
@@ -49,8 +49,8 @@
                     </template>
                     <MenuItem name="problemCreate" :to="{name: 'problemCreate'}">创建题目</MenuItem>
                     <MenuItem name="contestCreate" :to="{name: 'contestCreate'}">创建比赛</MenuItem>
-                    <MenuItem name="newsCreate">创建新闻</MenuItem>
-                    <MenuItem name="userEdit">用户管理</MenuItem>
+                    <!-- <MenuItem name="newsCreate">创建新闻</MenuItem>
+                    <MenuItem name="userEdit">用户管理</MenuItem> -->
                 </Submenu>
                 </div>
             </Menu>

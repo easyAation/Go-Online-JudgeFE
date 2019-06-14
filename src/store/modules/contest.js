@@ -91,7 +91,11 @@ const contest = {
       })
     },
     getSubmission(ctx, data) {
-      return http.get("contest/submission").then(res => {
+      return http.get("contest/submission", {
+        params: {
+          cid: data
+        }
+      }).then(res => {
         ctx.commit("UPDATE_SUBMISSION", res.data.list.reverse())
         ctx.commit("UPDATE_SUBMISSION_TOTAL", res.data.total)
       })
@@ -102,30 +106,30 @@ const contest = {
           cid: data,
         }
       }).then(res => {
-        console.log(res.data)
-        let ranList = normalize(res.data.ranList, getters.contest)
+        // console.log(res.data)
+        // console.log(getters.contest)
+        let ranList = normalize(res.data, getters.problems, getters.contest)
         commit("UPDATE_RANK_LIST", ranList)
       })
     }
   }
 }
 
-function normalize(ranklist, contest) {
-  const list = Object.values(ranklist).map(row => { // 每一行，也就是每一个用户的成绩
+function normalize(ranklist, problemList, contest) {
+  console.log(problemList)
+  const list = Object.values(ranklist).map(people => { // 每一行，也就是每一个用户的成绩
     let solved = 0 // 记录 ac 几道题
     let penalty = 0 // 罚时，尽在 ac 时计算
-    console.log(row)
-    for (const pid of contest.list) {
-      if (row[pid] == null) continue // 这道题没有交过
-      const submission = row[pid]
-      if (submission.wa >= 0) { // ac 了
+
+    for (const p of people.problems) {
+      if (p.failed >= 0) {
         solved++
-        penalty += submission.create - contest.start + submission.wa * 20 * 60 * 1000
+        penalty += new Date(p.create_at).getTime() - contest.start_at + p.failed * 20 * 60 * 1000
       }
     }
-    row.solved = solved
-    row.penalty = penalty
-    return row
+    people.solved = solved
+    people.penalty = penalty
+    return people
   })
 
   // 排序, 先按照 solved, 在按照 penalty
@@ -136,26 +140,26 @@ function normalize(ranklist, contest) {
     return x.penalty - y.penalty
   })
 
-  // 接下来计算 primes
-  const quickest = {} // 每到题最早提交的 ac 时间
-  for (const pid of contest.list) {
-    quickest[pid] = Infinity // init
-  }
-  list.forEach(row => {
-    for (const pid of contest.list) {
-      if (row[pid] != null && row[pid].wa >= 0) {
-        quickest[pid] = Math.min(quickest[pid], row[pid].create)
-      }
-    }
-  })
-  list.forEach(row => {
-    for (const pid of contest.list) {
-      if (row[pid] == null || row[pid].wa < 0) continue
-      if (quickest[pid] === row[pid].create) { // 这就是最早提交的那个
-        row[pid].prime = true // 打上标记
-      }
-    }
-  })
+  // // 接下来计算 primes
+  // const quickest = {} // 每到题最早提交的 ac 时间
+  // for (const p of problemList) {
+  //   quickest[p.pid] = Infinity // init
+  // }
+  // list.forEach(row => {
+  //   for (const p of problemList) {
+  //     if (row[p.pid] != null && row[pid]. >= 0) {
+  //       quickest[pid] = Math.min(quickest[pid], row[pid].create)
+  //     }
+  //   }
+  // })
+  // list.forEach(row => {
+  //   for (const pid of contest.list) {
+  //     if (row[pid] == null || row[pid].wa < 0) continue
+  //     if (quickest[pid] === row[pid].create) { // 这就是最早提交的那个
+  //       row[pid].prime = true // 打上标记
+  //     }
+  //   }
+  // })
   return list
 }
 

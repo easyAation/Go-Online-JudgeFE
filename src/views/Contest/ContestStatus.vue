@@ -113,7 +113,7 @@ export default {
       list: [],
       showList: [],
       currentIndex: 1,
-      pageSize: 2,
+      pageSize: 20,
       judgeList: [],
       languageList: []
     };
