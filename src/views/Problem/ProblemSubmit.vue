@@ -3,7 +3,7 @@
     <h1>{{ this.$route.params.pid }}:  {{ problem.name }}</h1>
     <div>
     <Form v-model="solution">
-      <FormItem label="language" label-position="left">
+      <FormItem label="language" label-position="left" value="C">
         <Select v-model="solution.language">
           <Option value="C">C (gcc 7.2.0)</Option>
           <Option value="CPP">C++ (g++ 7.2.0)</Option>
@@ -16,89 +16,140 @@
        </FormItem>
     </Form>
     </div>
-    <router-link to="/status">
+  
     <!--
     <Button type="primary" @click="submit" :disabled="!isLogin">Submit</Button>
     -->
     <Button type="primary" @click="submit">Submit</Button>
-    </router-link>
+   
     <Button style="margin-left: 8px" @click="reset">Reset</Button>
-    <p v-if="!isLogin">Please Log in First</p>
-    <div> 
-        <span> {{solution.language}} </span>
-   </div>
+
+  <Modal
+        v-model="toDisplayModal"
+        @on-ok="ok"
+        :title="modelTitle"
+        @on-cancel="cancel">
+        <div display:inline>
+          <Spin >
+            <div>
+             <p v-if="res.result === 'Accepted'" style="color:green">
+                    {{res.result}}
+             </p>
+             <p v-else-if="res.result === 'Compilation Error'" style="color:purple">
+                    {{res.result}}
+             </p>
+             <p v-else-if="res.result === 'Wrong Answer'" style="color:red">
+                   {{ res.result }}
+             </p>
+             <p v-else-if="res.result === 'Time Limit'" style="color:red">
+                   {{ res.result }}
+             </p>
+             <p v-else-if="res.result !== '' " style="color:metting">
+                  {{ res.result }}
+             </p>
+             </div>
+          </Spin>
+             
+             <!-- <p> {{res.time}}ms </p>
+             <p> {{res.memoty}}b</P> -->
+        </div>
+        <!-- <pre> {{solution.code}} </pre> -->
+    </Modal>
+
   </div>
 </template>
 
 <script>
-import axios from 'axios'
-import uuid from '../../utils/uuid'
+import http from "../../http.js";
+import uuid from "../../utils/uuid";
+import { mapGetters } from "vuex";
 export default {
-    data() {
-        return {
-            isLogin: localStorage.getItem("Flag"),
-            solution: {
-              code:'',
-              language:''
-            },
-            problem: ''
-        }
+  data() {
+    return {
+      isLogin: localStorage.getItem("token"),
+      toDisplayModal: false,
+      solution: {
+        code: "",
+        language: ""
+      },
+      modelTitle: "",
+      res: {
+        result: "panding"
+      },
+      problem: ""
+    };
+  },
+  methods: {
+    ok() {
+      this.$Message.info("Clicked ok");
     },
-    methods: {
+    cancel() {
+      this.$Message.info("Clicked cancel");
+    },
     getProblemDetail: function() {
       var self = this;
-      axios
-      .get(process.env.BASE_API + '/v1/problem/detail',{
+      http
+        .get("problem/detail", {
           params: {
-              pid: self.id
+            pid: self.id
           }
-      })
-      .then(function(response){
-        self.problem = response.data.problem
-      })
+        })
+        .then(function(res) {
+          self.problem = res.data.problem;
+        });
     },
-    reset() {
-
-    },
+    reset() {},
     submit() {
-      var self = this
+      this.res.result = "pending";
+      let pro = this.problem;
       var data = {
-        //  "pid":self.id.toString(),
-      //    "uid":localStorage.getItem("uid"),
-          "id": uuid.uuid(8,32),
-          "problem_id": self.problem.id,
-          //"username":localStorage.getItem("Username").toString(),
-          "code": self.solution.code,
-          "language": self.solution.language,
-          "time_limit": self.problem.time_limit,
-          "memory_limit": self.problem.memory_limit,
-        }
-        console.log(data)
-      axios
-      .post(process.env.BASE_API + '/v1/submission/submit',JSON.stringify(data))
-      .then(function(response){
-          console.log(response)
-      })
+        id: uuid.uuid(8, 32).toLowerCase(),
+        problem_id: pro.id,
+        code: this.solution.code,
+        language: this.solution.language,
+        time_limit: pro.time_limit,
+        memory_limit: pro.memory_limit
+      };
+      console.log(data);
+      this.modelTitle = "#" + data.id + "uid for " + pro.id;
+      let account = JSON.parse(localStorage.getItem("account"));
+      http
+        .post("submission/submit", JSON.stringify(data))
+        .then(res => {
+          this.res = res.data.data;
+          console.log(res.data);
+        })
+        .catch(err => {
+          this.res.result = "system error!";
+          console.log(err.message);
+        });
+      this.toDisplayModal = true;
     }
   },
   mounted: function() {
-     this.getProblemDetail()
+    this.getProblemDetail();
+  },
+  computed: {
+    ...mapGetters({
+      isLogined: "session/isLogined"
+    })
   },
   created() {
-      this.id = this.$route.params.pid
+    this.id = this.$route.params.pid;
   }
-
-}
+};
 </script>
 
 <style lang="stylus">
-h1
-  margin-bottom: 10px
-  color: #9799CA
-  margin-top: 10px
-  text-align: center
-  font-size: 30px
-  
-.ivu-form-item-label
-    font-size: 16px
+h1 {
+  margin-bottom: 10px;
+  color: #9799CA;
+  margin-top: 10px;
+  text-align: center;
+  font-size: 30px;
+}
+
+.ivu-form-res-label {
+  font-size: 16px;
+}
 </style>

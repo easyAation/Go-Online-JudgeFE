@@ -1,8 +1,8 @@
 <template lang="html">
   <div class="conover-wrap">
-    <h1>{{ overview.contest.title }}</h1>
-    <h3>Start Time:&nbsp;&nbsp;{{ overview.contest.start_time | timePretty }}</h3>
-    <h3>End Time:&nbsp;&nbsp;{{ overview.contest.end_time | timePretty }}</h3>
+    <h2>{{ contest.title }}</h2>
+    <h4>Start Time:&nbsp;&nbsp;{{ contest.create_at | timePretty }}</h4>
+    <h4>End Time:&nbsp;&nbsp;{{ contest.end_at | timePretty }}</h4>
     <table>
       <tr>
         <th>#</th>
@@ -10,19 +10,20 @@
         <th>Title</th>
         <th>Ratio</th>
       </tr>
-      <tr v-for="(item, index) in overview.problem" :key="item.pid">
+      <tr v-for="(item, index) in problems" :key="item.pid">
         <td>
-          <Icon v-if="1 !== -1" type="checkmark-round"></Icon>
+           <Icon v-if=" isLogined && solved(item.pid) == 2" size="25" type="ios-checkmark" style="color:red"> </Icon> 
+          <Icon v-else-if="solved(item.pid) == 1" size="25" type="ios-close" style="color:red"></Icon>
         </td>
-        <!-- <td>{{ index + 1 }}</td> -->
-        <td>{{ item.index }}</td>
+        <td>{{ index + 1 }}</td>
         <td>
-          <router-link :to="{ name: 'contestProblemInfo', params: { pid: item.id,cid: cid, id: item.index } }">
-            <Button type="text" style="color:#2d8cf0">{{ item.title }}</Button>
+          <router-link :to="{ name: 'contestProblem', params: { cid: cid, id: index }}">
+            <Button type="text">{{ item.title }}</Button>
           </router-link>
         <td>
-          <!-- <span>{{ item.solve / (item.submision + 0.000001) | formate }}</span>&nbsp; -->
-          ({{ item.solve }} / {{ item.submission }})
+          <!-- <span v-if="item.submit === 0">0%</span> -->
+          <span>{{ solveCount(item.pid) / (submitCount(item.pid) + 0.000001) | formate }}</span>&nbsp;
+          ({{ solveCount(item.pid) }} / {{ submitCount(item.pid) }})
         </td>
       </tr>
     </table>
@@ -30,75 +31,108 @@
 </template>
 
 <script>
-import axios from 'axios'
+import { mapGetters, mapActions } from "vuex";
+
 export default {
-    data() {
-      return {
-        overview: [],
-        cid: ''
+  data() {
+    return {
+      cid: this.$route.params.cid
+    };
+  },
+  computed: {
+    ...mapGetters({
+      contest: "contest/contest",
+      problems: "contest/problems",
+      submission: "contest/submission",
+      isLogined: "session/isLogined"
+    }),
+    query() {
+      let uid;
+      if (this.profile) {
+        uid = this.profile.uid;
       }
-    },
-    methods: {
-      getContestOverView: function() {
-        var self = this
-        axios
-        .get(process.env.BASE_API + '/api/v1/contest/detail',{
-          params : {
-            contest_id : self.cid
-          }
-        })
-        .then(function(response) {
-            self.overview = response.data.data
-        })
-      }
-    },
-    mounted: function() {
-      this.getContestOverView()
-    },
-    created() {
-      this.cid = this.$route.params.cid
+      const opt = {
+        cid: this.$route.params.cid,
+        uid
+      };
+      return opt;
     }
-}
+  },
+  created() {
+    //this.fetch();
+    //this.changeDomTitle({ title: `Contest ${this.$route.params.cid}` });
+    this.$store.dispatch("contest/findOne", this.cid);
+  },
+  methods: {
+    ...mapActions(["changeDomTitle"]),
+    fetch() {
+      this.$store.dispatch("contest/findOne", this.cid);
+    },
+    solved(pid) {
+      let uid = localStorage.getItem("uid");
+      if (uid === "") {
+        return 0;
+      }
+      let isTest = false;
+      for (let i = 0; i < this.submission.length; i++) {
+        if (uid === this.submission[i].uid && this.submission[i].pid === pid) {
+          isTest = true;
+          if (this.submission[i].result == "Accepted") return 2;
+        }
+      }
+      if (isTest) return 1;
+      return 0;
+    },
+    submitCount(pid) {
+      let count = 0;
+      let uid = localStorage.getItem("uid");
+      for (let i = 0; i < this.submission.length; i++) {
+        if (pid == this.submission[i].pid && this.submission[i].uid == uid)
+          count++;
+      }
+      return count;
+    },
+    solveCount(pid) {
+      let count = 0;
+      let uid = localStorage.getItem("uid");
+      for (let i = 0; i < this.submission.length; i++) {
+        if (
+          pid == this.submission[i].pid &&
+          this.submission[i].result == "Accepted" &&
+          this.submission[i].uid == uid
+        )
+          count++;
+      }
+      return count;
+    }
+  },
+  watch: {
+    // 浏览器后退时回退页面
+    $route(to, from) {
+      if (to !== from) this.fetch();
+    },
+    profile(val) {
+      this.$store.dispatch("contest/findOne", this.query);
+    }
+  }
+};
 </script>
 
-<style lang="stylus">
-table
-  width: 100%
-  border-collapse: collapse
-  border-spacing: 0
-  th:nth-child(1)
-    padding-left: 10px
-  tr
-    border-bottom: 1px solid #ebeef5
-    height: 40px
-    line-height: 40px
-    font-size: 14px
-    td:nth-child(1)
-      padding-left: 10px
-  th
-    text-align:left
-  .ivu-btn
-    vertical-align: baseline
-    color: #e040fb
-    padding: 0 1px
-    font-size: 14px
+<style lang="stylus" scoped>
+@import '../../styles/common';
 
-table
-  th:nth-child(1)
-    width: 5%
-  th:nth-child(2)
-    width: 5%
-  th:nth-child(3)
-    width: 60%
+h2 {
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 8px;
+}
 
-h1
-  text-align: center
-  margin-top: 10px
-  margin-bottom: 8px
-  font-size: 30px
-h3
-  text-align: center
-  margin-bottom: 8px
-table
-  margin-bottom: 20px
+h4 {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+table {
+  margin-bottom: 20px;
+}
 </style>

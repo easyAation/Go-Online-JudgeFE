@@ -6,10 +6,10 @@ import router from './router'
 import store from './store'
 import iView from 'iview'
 import 'iview/dist/styles/iview.css'
-import { formate, timePretty, timeContest, timeagoPretty }from './utils/formate.js'
+import { formate, timePretty, timeContest, timeagoPretty } from './utils/formate.js'
 
 Vue.use(router);
-Vue.use(iView);  
+Vue.use(iView);
 
 Vue.filter('formate', formate)
 Vue.filter('timePretty', timePretty)
@@ -17,6 +17,7 @@ Vue.filter('timeContest', timeContest)
 Vue.filter('timeagoPretty', timeagoPretty)
 
 Vue.config.productionTip = false
+
 
 /* eslint-disable no-new */
 new Vue({
